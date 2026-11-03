@@ -1,0 +1,26 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-menu-button></ion-menu-button></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <h1 class="titulo">Soporte</h1>
+
+  <ion-segment [(ngModel)]="depto">
+    <ion-segment-button value="Consolas"><ion-label>Consolas</ion-label></ion-segment-button>
+    <ion-segment-button value="Telefonía"><ion-label>Telefonía</ion-label></ion-segment-button>
+  </ion-segment>
+
+  <ion-textarea label="Descripción del problema" label-placement="stacked" fill="outline"
+                [rows]="4" placeholder="Ej.: la consola no enciende" [(ngModel)]="descripcion"></ion-textarea>
+
+  <ion-button expand="block" fill="outline" (click)="hacerFoto()">
+    <ion-icon slot="start" name="camera-outline"></ion-icon>
+    {{ imagenBase64 ? 'Foto añadida (repetir)' : 'Hacer foto' }}
+  </ion-button>
+
+  <p class="muted">Reparación desde <strong>{{ precioBase }} €</strong></p>
+
+  <ion-button expand="block" (click)="enviar()">Enviar solicitud</ion-button>
+</ion-content>

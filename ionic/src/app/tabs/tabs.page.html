@@ -1,0 +1,39 @@
+<ion-menu contentId="main">
+  <ion-content>
+    <div class="menu-head">
+      <strong>Nombre de usuario</strong>
+      <span>correo@ejemplo.com</span>
+    </div>
+    <ion-list lines="none">
+      @for (o of opciones; track o) {
+        <ion-menu-toggle auto-hide="false">
+          <ion-item button detail="false">{{ o }}</ion-item>
+        </ion-menu-toggle>
+      }
+      <ion-menu-toggle auto-hide="false">
+        <ion-item button detail="false" (click)="salir()">Cerrar sesión</ion-item>
+      </ion-menu-toggle>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+
+
+<div class="ion-page" id="main">
+  <ion-tabs>
+    <ion-tab-bar slot="bottom">
+      <ion-tab-button tab="moviles">
+        <ion-icon name="phone-portrait-outline"></ion-icon>
+        <ion-label>Móviles</ion-label>
+      </ion-tab-button>
+      <ion-tab-button tab="videojuegos">
+        <ion-icon name="game-controller-outline"></ion-icon>
+        <ion-label>Videojuegos</ion-label>
+      </ion-tab-button>
+      <ion-tab-button tab="soporte">
+        <ion-icon name="construct-outline"></ion-icon>
+        <ion-label>Soporte</ion-label>
+      </ion-tab-button>
+    </ion-tab-bar>
+  </ion-tabs>
+</div>
