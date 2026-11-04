@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">AppReto</string>
+
+    <!-- Login -->
+    <string name="login_title">Hola de nuevo</string>
+    <string name="login_subtitle">Entra para ver el catálogo de JuegAlmi.</string>
+    <string name="email_hint">Correo</string>
+    <string name="password_hint">Contraseña</string>
+    <string name="btn_login">Entrar</string>
+    <string name="btn_register">Crear cuenta</string>
+
+    <!-- Navigation Drawer -->
+    <string name="nav_header_name">Nombre de usuario</string>
+    <string name="nav_header_email">correo@ejemplo.com</string>
+    <string name="nav_services">Servicios</string>
+    <string name="nav_location">Ubicación</string>
+    <string name="nav_gallery">Galería</string>
+    <string name="nav_history">Historia</string>
+    <string name="nav_operations">Mis operaciones</string>
+    <string name="nav_logout">Cerrar sesión</string>
+
+    <!-- Bottom Nav -->
+    <string name="bottom_nav_devices">Dispositivos</string>
+    <string name="bottom_nav_videogames">Videojuegos</string>
+    <string name="bottom_nav_support">Soporte</string>
+
+    <!-- Support -->
+    <string name="support_title">Soporte</string>
+    <string name="tab_consoles">CONSOLAS</string>
+    <string name="tab_telephony">TELEFONÍA</string>
+    <string name="problem_desc_hint">Descripción del problema</string>
+    <string name="problem_desc_example">Ej.: la consola no enciende</string>
+    <string name="btn_take_photo">Hacer foto</string>
+    <string name="repair_price_prefix">Reparación desde </string>
+    <string name="repair_price">60 €</string>
+    <string name="btn_send_request">Enviar solicitud</string>
+
+    <!-- Mobiles -->
+    <string name="mobiles_title">Móviles</string>
+    <string name="tab_all">Todos</string>
+    <string name="tab_smartphones">Smartphones</string>
+    <string name="tab_tablets">Tablets</string>
+    <string name="btn_buy">Comprar</string>
+    <string name="btn_rent">Alquilar</string>
+
+</resources>

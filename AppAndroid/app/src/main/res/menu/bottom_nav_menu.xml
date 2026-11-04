@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_devices"
+        android:icon="@drawable/ic_phone"
+        android:title="@string/bottom_nav_devices" />
+    <item
+        android:id="@+id/nav_videogames"
+        android:icon="@drawable/ic_videogame"
+        android:title="@string/bottom_nav_videogames" />
+    <item
+        android:id="@+id/nav_consoles"
+        android:icon="@drawable/ic_videogame"
+        android:title="@string/tab_consoles" />
+    <item
+        android:id="@+id/nav_support"
+        android:icon="@drawable/ic_support"
+        android:title="@string/bottom_nav_support" />
+</menu>

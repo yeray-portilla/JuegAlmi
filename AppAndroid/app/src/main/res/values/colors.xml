@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#FF6347</color>
+    <color name="primary_dark">#E5533D</color>
+    <color name="colorAccent">#FF6347</color>
+
+    <color name="background_dark">#0F141E</color>
+    <color name="surface_dark">#181E2B</color>
+
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#9CA3AF</color>
+
+    <color name="price_yellow">#FBBF24</color>
+    <color name="divider_color">#2D3748</color>
+    <color name="transparent">#00000000</color>
+</resources>

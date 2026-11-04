@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_services" android:title="@string/nav_services" />
+        <item android:id="@+id/nav_location" android:title="@string/nav_location" />
+        <item android:id="@+id/nav_gallery" android:title="@string/nav_gallery" />
+        <item android:id="@+id/nav_history" android:title="@string/nav_history" />
+        <item android:id="@+id/nav_operations" android:title="@string/nav_operations" />
+        <item android:id="@+id/nav_logout" android:title="@string/nav_logout" />
+    </group>
+</menu>
