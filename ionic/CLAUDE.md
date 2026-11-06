@@ -29,6 +29,8 @@ Proyecto: tienda de videojuegos, moviles, tablets y consolas (reto DAM2). Esta c
   - GET /info/tiendas ; GET /info/departamentos ; GET /info/marcas (marcas fabricantes, "Otra" al final)
 - Latitud y longitud son obligatorias en compras, alquileres y solicitudes: si el usuario niega el GPS, mandar 0.
 - La foto de la camara se manda en base64 (campo `foto_base64`), calidad ~60-70%.
+- Limites de texto (si se pasan, la API responde 400): descripcion de una solicitud max. 255 caracteres (al crear y al editar);
+  modelo de un aparato max. 100. En la app: `maxlength` en el campo (con `[counter]="true"` en la descripcion).
 
 ## Diseno (identico a Android)
 Tema oscuro azul #0A0F22, acento coral #FF5A36, secundario ambar #FFC53D. Esta en `src/theme/juegalmi.scss`.

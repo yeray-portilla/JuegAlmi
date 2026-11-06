@@ -57,7 +57,7 @@
           }
         </ion-select>
         <ion-input label="Modelo" label-placement="stacked" fill="outline" placeholder="Ej.: Galaxy S21"
-                   [maxlength]="100" [value]="nuevoModelo()" (ionInput)="nuevoModelo.set($any($event).detail.value ?? '')"></ion-input>
+                   [maxlength]="LIMITE_MODELO" [value]="nuevoModelo()" (ionInput)="nuevoModelo.set($any($event).detail.value ?? '')"></ion-input>
         <ion-button expand="block" [disabled]="enviando()" (click)="anadirAparato()">Guardar aparato</ion-button>
       </div>
     }
@@ -92,6 +92,7 @@
 
           <ion-textarea label="Descripción del problema" label-placement="stacked" fill="outline"
                         [rows]="4" placeholder="Ej.: la pantalla no enciende"
+                        [maxlength]="LIMITE_DESCRIPCION" [counter]="true"
                         [value]="descripcion()" (ionInput)="descripcion.set($any($event).detail.value ?? '')"></ion-textarea>
 
           @if (fotoBase64()) {
@@ -144,4 +145,27 @@
       }
     }
   }
+
+  <!-- Ventana para editar la descripcion de una solicitud pendiente -->
+  <ion-modal [isOpen]="editando() !== null" (didDismiss)="cerrarEdicion()" class="modal-fechas">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Editar descripción</ion-title>
+          <ion-buttons slot="end"><ion-button (click)="cerrarEdicion()">Cerrar</ion-button></ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <p class="muted"><strong>{{ editando()?.dispositivo }}</strong></p>
+        <div class="formulario">
+          <ion-textarea label="Descripción del problema" label-placement="stacked" fill="outline" [rows]="5"
+                        [maxlength]="LIMITE_DESCRIPCION" [counter]="true"
+                        [value]="textoEdicion()" (ionInput)="textoEdicion.set($any($event).detail.value ?? '')"></ion-textarea>
+          <ion-button expand="block" [disabled]="enviando()" (click)="guardarEdicion()">
+            {{ enviando() ? 'Guardando...' : 'Guardar' }}
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

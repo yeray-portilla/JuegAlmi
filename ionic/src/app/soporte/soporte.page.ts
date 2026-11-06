@@ -2,7 +2,7 @@ import { Component, computed, signal } from '@angular/core';
 import {
   IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonIcon, IonSpinner,
   IonSegment, IonSegmentButton, IonLabel, IonTextarea, IonSelect, IonSelectOption, IonInput,
-  IonRefresher, IonRefresherContent, AlertController,
+  IonRefresher, IonRefresherContent, IonModal, IonTitle, AlertController,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { cameraOutline, trashOutline } from 'ionicons/icons';
@@ -21,10 +21,14 @@ type Vista = 'aparatos' | 'pedir' | 'solicitudes';
   imports: [
     IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonIcon, IonSpinner,
     IonSegment, IonSegmentButton, IonLabel, IonTextarea, IonSelect, IonSelectOption, IonInput,
-    IonRefresher, IonRefresherContent,
+    IonRefresher, IonRefresherContent, IonModal, IonTitle,
   ],
 })
 export class SoportePage {
+  // Limites de la API (si se pasan, responde 400)
+  readonly LIMITE_DESCRIPCION = 255;
+  readonly LIMITE_MODELO = 100;
+
   // ---- Estado general (todo con signals: la app no lleva zone.js) ----
   vista = signal<Vista>('aparatos');
   cargando = signal(false);
@@ -49,6 +53,10 @@ export class SoportePage {
   descripcion = signal('');
   fotoBase64 = signal(''); // sin el prefijo "data:image/...;base64,"
   fotoFormato = signal('jpeg');
+
+  // ---- Ventana "Editar descripcion" ----
+  editando = signal<Operacion | null>(null); // null = ventana cerrada
+  textoEdicion = signal('');
 
   // true si la API ya manda los departamentos de cada tienda (cambio del backend)
   hayFiltroTiendas = computed(() => this.tiendas().some(t => Array.isArray(t.departamentos)));
@@ -239,19 +247,20 @@ export class SoportePage {
     return textos[estado] ?? estado;
   }
 
-  async editarDescripcion(solicitud: Operacion) {
-    const alerta = await this.alertas.create({
-      header: 'Editar descripción',
-      inputs: [{ name: 'descripcion', type: 'textarea', value: solicitud.descripcion ?? '' }],
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        { text: 'Guardar', role: 'confirm' },
-      ],
-    });
-    await alerta.present();
-    const { role, data } = await alerta.onDidDismiss();
-    const texto = (data?.values?.descripcion ?? '').trim();
-    if (role !== 'confirm') {
+  // Abre la ventana con la descripcion actual
+  editarDescripcion(solicitud: Operacion) {
+    this.textoEdicion.set(solicitud.descripcion ?? '');
+    this.editando.set(solicitud);
+  }
+
+  cerrarEdicion() {
+    this.editando.set(null);
+  }
+
+  async guardarEdicion() {
+    const solicitud = this.editando();
+    const texto = this.textoEdicion().trim();
+    if (!solicitud) {
       return;
     }
     if (!texto) {
@@ -262,6 +271,7 @@ export class SoportePage {
     try {
       await firstValueFrom(this.api.editarSolicitud(solicitud.solicitud_id ?? solicitud.id, texto));
       this.aviso.mostrar('Descripción actualizada.');
+      this.cerrarEdicion();
       this.recargarMisDatos();
     } catch (e) {
       this.aviso.mostrar(this.api.mensajeError(e), 'danger');
