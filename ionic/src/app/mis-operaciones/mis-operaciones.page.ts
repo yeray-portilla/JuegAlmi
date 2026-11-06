@@ -60,11 +60,12 @@ export class MisOperacionesPage {
       .join(', ');
   }
 
+  // Devolver un alquiler activo o cancelar uno pendiente (la API usa la misma ruta para los dos)
   async devolver(op: Operacion) {
     this.devolviendo.set(op.id);
     try {
       await firstValueFrom(this.api.devolverAlquiler(op.id));
-      this.aviso.mostrar('Alquiler devuelto.');
+      this.aviso.mostrar(op.estado === 'pendiente' ? 'Alquiler cancelado.' : 'Alquiler devuelto.');
     } catch (e) {
       this.aviso.mostrar(this.api.mensajeError(e), 'danger');
     }

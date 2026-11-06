@@ -78,3 +78,6 @@ ion-menu ion-item { --background: transparent; --color: #F2F5FF; --border-radius
 // Estado de una operacion (Mis operaciones)
 .estado-op { font-weight: 600; text-transform: capitalize;
   &.activo, &.completada { color: #7BE495; } &.pendiente { color: #FFC53D; } &.finalizado { color: #A9B4D6; } }
+
+// Aviso "Obteniendo ubicación…"
+ion-loading { --background: #151E3A; --spinner-color: #FF5A36; color: #F2F5FF; }

@@ -34,10 +34,15 @@
             <span [class]="'estado-op ' + op.estado">{{ op.estado }}</span>
           </span>
           <span class="precio">{{ op.total }} €</span>
-          @if (op.tipo === 'alquiler' && op.estado === 'activo') {
+          <!-- Activo: Devolver. Pendiente (aun no ha empezado): Cancelar. Las dos usan la misma ruta de la API -->
+          @if (op.tipo === 'alquiler' && (op.estado === 'activo' || op.estado === 'pendiente')) {
             <div class="botones">
               <ion-button size="small" fill="outline" [disabled]="devolviendo() !== null" (click)="devolver(op)">
-                {{ devolviendo() === op.id ? 'Devolviendo...' : 'Devolver' }}
+                @if (op.estado === 'pendiente') {
+                  {{ devolviendo() === op.id ? 'Cancelando...' : 'Cancelar' }}
+                } @else {
+                  {{ devolviendo() === op.id ? 'Devolviendo...' : 'Devolver' }}
+                }
               </ion-button>
             </div>
           }
