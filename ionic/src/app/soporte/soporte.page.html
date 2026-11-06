@@ -5,22 +5,143 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="cargar($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <h1 class="titulo">Soporte</h1>
 
-  <ion-segment [(ngModel)]="depto">
-    <ion-segment-button value="Consolas"><ion-label>Consolas</ion-label></ion-segment-button>
-    <ion-segment-button value="Telefonía"><ion-label>Telefonía</ion-label></ion-segment-button>
+  <ion-segment [value]="vista()" (ionChange)="cambiarVista($event)">
+    <ion-segment-button value="aparatos"><ion-label>Mis aparatos</ion-label></ion-segment-button>
+    <ion-segment-button value="pedir"><ion-label>Pedir reparación</ion-label></ion-segment-button>
+    <ion-segment-button value="solicitudes"><ion-label>Mis solicitudes</ion-label></ion-segment-button>
   </ion-segment>
 
-  <ion-textarea label="Descripción del problema" label-placement="stacked" fill="outline"
-                [rows]="4" placeholder="Ej.: la consola no enciende" [(ngModel)]="descripcion"></ion-textarea>
+  @if (cargando() && marcas().length === 0) {
+    <div class="estado"><ion-spinner name="crescent"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="estado">
+      <span class="err">{{ error() }}</span>
+      <ion-button size="small" fill="outline" (click)="cargar()">Reintentar</ion-button>
+    </div>
+  } @else {
 
-  <ion-button expand="block" fill="outline" (click)="hacerFoto()">
-    <ion-icon slot="start" name="camera-outline"></ion-icon>
-    {{ imagenBase64 ? 'Foto añadida (repetir)' : 'Hacer foto' }}
-  </ion-button>
+    <!-- ===================== MIS APARATOS ===================== -->
+    @if (vista() === 'aparatos') {
+      @for (a of aparatos(); track a.id) {
+        <div class="prod">
+          <div class="info">
+            <strong>{{ a.marca }} {{ a.modelo }}</strong>
+            <span class="muted">{{ a.departamento }}</span>
+            <div class="botones">
+              <ion-button size="small" fill="outline" (click)="repararAparato(a)">Pedir reparación</ion-button>
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <p class="muted">Todavía no has registrado ningún aparato.</p>
+      }
 
-  <p class="muted">Reparación desde <strong>{{ precioBase }} €</strong></p>
+      <div class="formulario">
+        <h2 class="subtitulo">Añadir aparato</h2>
+        <ion-select label="Marca" label-placement="stacked" fill="outline" placeholder="Elige la marca"
+                    [value]="nuevaMarca()" (ionChange)="nuevaMarca.set($any($event).detail.value)">
+          @for (m of marcas(); track m.id) {
+            <ion-select-option [value]="m.id">{{ m.nombre }}</ion-select-option>
+          }
+        </ion-select>
+        <ion-select label="Tipo de aparato" label-placement="stacked" fill="outline" placeholder="Elige el tipo"
+                    [value]="nuevoDepartamento()" (ionChange)="nuevoDepartamento.set($any($event).detail.value)">
+          @for (d of departamentos(); track d.id) {
+            <ion-select-option [value]="d.id">{{ d.nombre }}</ion-select-option>
+          }
+        </ion-select>
+        <ion-input label="Modelo" label-placement="stacked" fill="outline" placeholder="Ej.: Galaxy S21"
+                   [maxlength]="100" [value]="nuevoModelo()" (ionInput)="nuevoModelo.set($any($event).detail.value ?? '')"></ion-input>
+        <ion-button expand="block" [disabled]="enviando()" (click)="anadirAparato()">Guardar aparato</ion-button>
+      </div>
+    }
 
-  <ion-button expand="block" (click)="enviar()">Enviar solicitud</ion-button>
+    <!-- ===================== PEDIR REPARACION ===================== -->
+    @if (vista() === 'pedir') {
+      @if (aparatos().length === 0) {
+        <div class="estado">
+          <span class="muted">Primero registra tu aparato en "Mis aparatos".</span>
+          <ion-button size="small" fill="outline" (click)="vista.set('aparatos')">Ir a Mis aparatos</ion-button>
+        </div>
+      } @else {
+        <div class="formulario">
+          <ion-select label="Aparato" label-placement="stacked" fill="outline" placeholder="Elige el aparato"
+                      [value]="aparatoElegido()" (ionChange)="elegirAparato($any($event).detail.value)">
+            @for (a of aparatos(); track a.id) {
+              <ion-select-option [value]="a.id">{{ a.marca }} {{ a.modelo }} ({{ a.departamento }})</ion-select-option>
+            }
+          </ion-select>
+
+          <ion-select label="Tienda" label-placement="stacked" fill="outline"
+                      [placeholder]="aparatoElegido() ? 'Elige la tienda' : 'Primero elige el aparato'"
+                      [disabled]="!aparatoElegido() || tiendasDisponibles().length === 0"
+                      [value]="tiendaElegida()" (ionChange)="tiendaElegida.set($any($event).detail.value)">
+            @for (t of tiendasDisponibles(); track t.id) {
+              <ion-select-option [value]="t.id">{{ t.nombre }} · {{ t.direccion }}</ion-select-option>
+            }
+          </ion-select>
+          @if (aparatoElegido() && tiendasDisponibles().length === 0) {
+            <span class="err">Ninguna tienda repara este tipo de aparato.</span>
+          }
+
+          <ion-textarea label="Descripción del problema" label-placement="stacked" fill="outline"
+                        [rows]="4" placeholder="Ej.: la pantalla no enciende"
+                        [value]="descripcion()" (ionInput)="descripcion.set($any($event).detail.value ?? '')"></ion-textarea>
+
+          @if (fotoBase64()) {
+            <div class="foto-previa">
+              <img [src]="fotoUrl" alt="Foto del aparato">
+              <ion-button size="small" fill="clear" (click)="quitarFoto()">
+                <ion-icon slot="start" name="trash-outline"></ion-icon> Quitar foto
+              </ion-button>
+            </div>
+          }
+          <ion-button expand="block" fill="outline" (click)="hacerFoto()">
+            <ion-icon slot="start" name="camera-outline"></ion-icon>
+            {{ fotoBase64() ? 'Repetir foto' : 'Hacer foto (opcional)' }}
+          </ion-button>
+
+          <ion-button expand="block" [disabled]="enviando()" (click)="enviarSolicitud()">
+            {{ enviando() ? 'Enviando...' : 'Enviar solicitud' }}
+          </ion-button>
+        </div>
+      }
+    }
+
+    <!-- ===================== MIS SOLICITUDES ===================== -->
+    @if (vista() === 'solicitudes') {
+      @for (s of solicitudes(); track s.id) {
+        <div class="prod">
+          @if (s.url_foto) {
+            <img [src]="api.urlFoto(s.url_foto)" [alt]="s.dispositivo" (error)="api.fotoRota($event)" loading="lazy">
+          }
+          <div class="info">
+            <strong>{{ s.dispositivo }}</strong>
+            <span class="muted">{{ s.fecha }} · <span [class]="'estado-op texto ' + s.estado">{{ textoEstado(s.estado) }}</span></span>
+            <span class="muted">{{ s.descripcion }}</span>
+            @if (s.estado === 'rechazada' && s.motivo_rechazo) {
+              <span class="err">Motivo: {{ s.motivo_rechazo }}</span>
+            }
+            @if (s.total !== null) {
+              <span class="precio">{{ s.total }} €</span>
+            }
+            @if (s.estado === 'pendiente') {
+              <div class="botones">
+                <ion-button size="small" fill="outline" [disabled]="enviando()" (click)="editarDescripcion(s)">Editar</ion-button>
+                <ion-button size="small" fill="outline" [disabled]="enviando()" (click)="cancelarSolicitud(s)">Cancelar</ion-button>
+              </div>
+            }
+          </div>
+        </div>
+      } @empty {
+        <p class="muted">No has pedido ninguna reparación.</p>
+      }
+    }
+  }
 </ion-content>

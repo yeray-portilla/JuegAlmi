@@ -849,6 +849,13 @@ final class ApiController extends AbstractController
             foreach ($tienda->getFotos() as $foto) {
                 $fotos[] = $foto->getUrl();
             }
+            // Departamentos que ofrece esta tienda (tabla tienda_departamento). La app los usa para filtrar.
+            $departamentos = [];
+            $ofrecidos = $this->em->getRepository(TiendaDepartamento::class)->findBy(['tienda' => $tienda]);
+            foreach ($ofrecidos as $ofrecido) {
+                $departamento = $ofrecido->getDepartamento();
+                $departamentos[] = ['id' => $departamento->getId(), 'nombre' => $departamento->getNombre()];
+            }
             $resultado[] = [
                 'id' => $tienda->getId(),
                 'nombre' => $tienda->getNombre(),
@@ -857,6 +864,7 @@ final class ApiController extends AbstractController
                 'latitud' => (float) $tienda->getLatitud(),
                 'longitud' => (float) $tienda->getLongitud(),
                 'fotos' => $fotos,
+                'departamentos' => $departamentos,
             ];
         }
 

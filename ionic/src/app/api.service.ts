@@ -67,7 +67,54 @@ export interface Operacion {
   total: number | null;
   // compra: [{nombre, cantidad, precio_unidad}]; alquiler: [{nombre}]
   detalle?: { nombre: string; cantidad?: number; precio_unidad?: number }[];
-  dispositivo?: string; // solo reparaciones
+  // Solo reparaciones (estado: pendiente | rechazada | en_proceso | completada)
+  dispositivo?: string;
+  solicitud_id?: number;
+  reparacion_id?: number | null;
+  descripcion?: string;
+  url_foto?: string | null;
+  motivo_rechazo?: string | null;
+}
+
+// ---- Soporte ----
+export interface Marca {
+  id: number;
+  nombre: string;
+}
+
+export interface Departamento {
+  id: number;
+  nombre: string;
+  descripcion: string | null;
+}
+
+export interface Tienda {
+  id: number;
+  nombre: string;
+  direccion: string;
+  historia: string | null;
+  latitud: number;
+  longitud: number;
+  fotos: string[];
+  // Departamentos que repara la tienda. Hace falta el cambio en el backend (opcion 1);
+  // mientras no llegue sera undefined y la app muestra todas las tiendas.
+  departamentos?: { id: number; nombre: string }[];
+}
+
+// Un aparato del cliente (GET/POST /soporte/dispositivos)
+export interface Aparato {
+  id: number;
+  marca_id: number;
+  marca: string;
+  departamento_id: number;
+  departamento: string;
+  modelo: string;
+}
+
+export interface SolicitudRespuesta {
+  solicitud_id: number;
+  estado: string;
+  url_foto: string | null;
 }
 
 // Linea de una compra: producto y unidades
@@ -174,12 +221,13 @@ export class ApiService {
 
   // ===================== Soporte (usuario) =====================
 
-  obtenerMisDispositivos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.url}/soporte/dispositivos`);
+  obtenerMisDispositivos(): Observable<Aparato[]> {
+    return this.http.get<Aparato[]>(`${this.url}/soporte/dispositivos`);
   }
 
-  crearDispositivo(marca_id: number, departamento_id: number, modelo: string): Observable<any> {
-    return this.http.post(`${this.url}/soporte/dispositivos`, { marca_id, departamento_id, modelo });
+  // Si el aparato ya existia, la API devuelve el que ya estaba (no lo duplica)
+  crearDispositivo(marca_id: number, departamento_id: number, modelo: string): Observable<Aparato> {
+    return this.http.post<Aparato>(`${this.url}/soporte/dispositivos`, { marca_id, departamento_id, modelo });
   }
 
   // foto_base64 es opcional (foto de la camara, calidad ~65%)
@@ -190,8 +238,8 @@ export class ApiService {
     latitud: number;
     longitud: number;
     foto_base64?: string;
-  }): Observable<any> {
-    return this.http.post(`${this.url}/soporte/solicitudes`, datos);
+  }): Observable<SolicitudRespuesta> {
+    return this.http.post<SolicitudRespuesta>(`${this.url}/soporte/solicitudes`, datos);
   }
 
   // Solo se puede si la solicitud esta pendiente
@@ -230,16 +278,16 @@ export class ApiService {
 
   // ===================== Informacion =====================
 
-  obtenerTiendas(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.url}/info/tiendas`);
+  obtenerTiendas(): Observable<Tienda[]> {
+    return this.http.get<Tienda[]>(`${this.url}/info/tiendas`);
   }
 
-  obtenerDepartamentos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.url}/info/departamentos`);
+  obtenerDepartamentos(): Observable<Departamento[]> {
+    return this.http.get<Departamento[]>(`${this.url}/info/departamentos`);
   }
 
   // Marcas fabricantes ("Otra" va al final)
-  obtenerMarcas(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.url}/info/marcas`);
+  obtenerMarcas(): Observable<Marca[]> {
+    return this.http.get<Marca[]>(`${this.url}/info/marcas`);
   }
 }
