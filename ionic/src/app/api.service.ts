@@ -111,6 +111,27 @@ export interface Aparato {
   modelo: string;
 }
 
+// Una solicitud vista por el administrador (GET /admin/solicitudes)
+export interface SolicitudAdmin {
+  id: number;
+  fecha: string;
+  estado: 'pendiente' | 'aceptada' | 'rechazada';
+  usuario: string;     // nombre de usuario
+  dispositivo: string; // marca + modelo
+  tipo: string;        // departamento
+  tienda: string;
+  descripcion: string;
+  url_foto: string | null;
+  latitud: number;
+  longitud: number;
+  motivo_rechazo: string | null;
+  reparacion_id: number | null;
+  // La API actual NO manda estos tres. Si el backend los anade, la app los usa.
+  reparacion_estado?: 'en_proceso' | 'completada';
+  precio_estimado?: number | null;
+  precio_final?: number | null;
+}
+
 export interface SolicitudRespuesta {
   solicitud_id: number;
   estado: string;
@@ -255,12 +276,12 @@ export class ApiService {
   // ===================== Administrador (ROLE_ADMIN) =====================
 
   // estado opcional: pendiente, aceptada o rechazada (sin estado salen todas)
-  obtenerSolicitudesAdmin(estado?: string): Observable<any[]> {
+  obtenerSolicitudesAdmin(estado?: string): Observable<SolicitudAdmin[]> {
     let params = new HttpParams();
     if (estado) {
       params = params.set('estado', estado);
     }
-    return this.http.get<any[]>(`${this.url}/admin/solicitudes`, { params });
+    return this.http.get<SolicitudAdmin[]>(`${this.url}/admin/solicitudes`, { params });
   }
 
   aceptarSolicitud(id: number, precio_estimado: number): Observable<any> {

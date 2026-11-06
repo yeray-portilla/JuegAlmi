@@ -89,3 +89,7 @@ ion-loading { --background: #151E3A; --spinner-color: #FF5A36; color: #F2F5FF; }
   img { max-width: 100%; max-height: 220px; border-radius: 12px; object-fit: contain; background: #1F2A4D; } }
 .estado-op { &.rechazada { color: #FF9B8A; } &.en_proceso { color: #FFC53D; } }
 .estado-op.texto { text-transform: none; } // en Soporte el texto ya viene bien escrito
+
+// Administracion
+.solicitud { .descripcion { color: #F2F5FF; font-size: 14px; }
+  a { color: #FFC53D; } }

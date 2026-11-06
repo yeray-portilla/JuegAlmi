@@ -9,6 +9,8 @@ Proyecto: tienda de videojuegos, moviles, tablets y consolas (reto DAM2). Esta c
 - No hagas git commit/push, ni toques .env, claves ni nada fuera de esta carpeta.
 - Despues de cada tarea ejecuta `npx ng build` y arregla los errores. Dime que cambiaste en 3-5 lineas.
 - Si algo del contrato de la API no esta claro, lee `docs/ApiController.php` (es el controlador real del backend) en vez de adivinar.
+- Esta app no usa zone.js: todo lo que cambie tras una llamada a la API (datos, cargando, error, filtros) debe ser un signal() y leerse con paréntesis en la plantilla. Usa computed() para listas filtradas.
+- Si una foto falla, usa api.fotoRota($event) en el (error) de la imagen.
 
 ## API (backend Symfony)
 - URL base: ver `src/environments/environment.ts` (campo `apiUrl`, sin barra final). Existe `mock: boolean` para trabajar sin API.
@@ -43,5 +45,4 @@ Camara (Capacitor Camera), GPS (Capacitor Geolocation), carga asincrona con spin
 5. Soporte: "Mis aparatos" (listar + anadir con desplegable de marcas y departamentos) y "Pedir reparacion" (elegir aparato, tienda que ofrezca ese departamento, descripcion, foto con camara, GPS) y "Mis solicitudes" (editar descripcion / cancelar si estan pendientes).
 6. Pantalla admin (solo si roles incluye ROLE_ADMIN): lista de solicitudes con filtro por estado, aceptar con precio, rechazar con motivo, y marcar reparacion completada con precio final.
 
-- Esta app no usa zone.js: todo lo que cambie tras una llamada a la API (datos, cargando, error, filtros) debe ser un signal() y leerse con paréntesis en la plantilla. Usa computed() para listas filtradas.
-- Si una foto falla, usa api.fotoRota($event) en el (error) de la imagen.
+

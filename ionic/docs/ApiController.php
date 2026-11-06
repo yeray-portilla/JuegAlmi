@@ -720,6 +720,10 @@ final class ApiController extends AbstractController
                 'longitud' => (float) $solicitud->getLongitud(),
                 'motivo_rechazo' => $solicitud->getMotivoRechazo(),
                 'reparacion_id' => $reparacion !== null ? $reparacion->getId() : null,
+                // Datos de la reparacion para que el admin vea si ya esta completada (null si aun no hay reparacion).
+                'reparacion_estado' => $reparacion !== null ? $reparacion->getEstado() : null,
+                'precio_estimado' => $reparacion !== null ? (float) $reparacion->getPrecioEstimado() : null,
+                'precio_final' => $reparacion !== null && $reparacion->getPrecioFinal() !== null ? (float) $reparacion->getPrecioFinal() : null,
             ];
         }
 
