@@ -42,3 +42,6 @@ Camara (Capacitor Camera), GPS (Capacitor Geolocation), carga asincrona con spin
 4. Pagina Consolas (ruta, pestana y lista desde /productos/consolas), con el mismo estilo que Moviles.
 5. Soporte: "Mis aparatos" (listar + anadir con desplegable de marcas y departamentos) y "Pedir reparacion" (elegir aparato, tienda que ofrezca ese departamento, descripcion, foto con camara, GPS) y "Mis solicitudes" (editar descripcion / cancelar si estan pendientes).
 6. Pantalla admin (solo si roles incluye ROLE_ADMIN): lista de solicitudes con filtro por estado, aceptar con precio, rechazar con motivo, y marcar reparacion completada con precio final.
+
+- Esta app no usa zone.js: todo lo que cambie tras una llamada a la API (datos, cargando, error, filtros) debe ser un signal() y leerse con paréntesis en la plantilla. Usa computed() para listas filtradas.
+- Si una foto falla, usa api.fotoRota($event) en el (error) de la imagen.

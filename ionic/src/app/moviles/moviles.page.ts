@@ -4,6 +4,7 @@ import {
   IonRefresher, IonRefresherContent,
 } from '@ionic/angular';
 import { ApiService, Dispositivo } from '../api.service';
+import { OperacionesService } from '../operaciones.service';
 
 @Component({
   standalone: true,
@@ -21,7 +22,9 @@ export class MovilesPage implements OnInit {
   cargando = signal(false);
   error = signal('');
 
-  constructor(public api: ApiService) {}
+  enviando = signal(false); // true mientras se compra/alquila (botones desactivados)
+
+  constructor(public api: ApiService, private operaciones: OperacionesService) {}
 
   ngOnInit() {
     this.cargar();
@@ -55,4 +58,14 @@ export class MovilesPage implements OnInit {
     }
     return this.datos();
   });
+
+  // Compra 1 unidad y despues recarga la lista para ver el stock nuevo
+  async comprar(producto: Dispositivo) {
+    this.enviando.set(true);
+    const enviado = await this.operaciones.comprar(producto);
+    this.enviando.set(false);
+    if (enviado) {
+      this.cargar();
+    }
+  }
 }

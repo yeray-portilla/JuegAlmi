@@ -31,7 +31,7 @@
           <strong>{{ p.nombre }}</strong>
           <span class="muted">{{ p.marca }} · {{ p.tipo === 'telefono' ? 'Smartphone' : 'Tablet' }} · {{ p.almacenamiento }}</span>
           <span class="precio">{{ p.precio }} €</span>
-          <div class="botones"><ion-button size="small" fill="outline" [disabled]="p.stock === 0">Comprar</ion-button></div>
+          <div class="botones"><ion-button size="small" fill="outline" [disabled]="p.stock === 0 || enviando()" (click)="comprar(p)">Comprar</ion-button></div>
         </div>
       </div>
     } @empty {

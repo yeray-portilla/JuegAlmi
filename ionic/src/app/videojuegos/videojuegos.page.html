@@ -27,8 +27,9 @@
           <span class="muted">{{ v.marca }}</span>
           <span class="precio">{{ v.precio }} € · alquiler {{ v.precio_diario }} €/día</span>
           <div class="botones">
-            <ion-button size="small" [disabled]="v.stock === 0">Comprar</ion-button>
-            <ion-button size="small" fill="outline" [disabled]="v.copias_alquiler === 0">Alquilar</ion-button>
+            <ion-button size="small" [disabled]="v.stock === 0 || enviando()" (click)="comprar(v)">Comprar</ion-button>
+            <ion-button size="small" fill="outline" [disabled]="v.copias_alquiler === 0 || enviando()"
+                        (click)="abrirAlquiler(v)">Alquilar</ion-button>
           </div>
         </div>
       </div>
@@ -36,4 +37,31 @@
       <div class="estado"><span class="muted">No hay videojuegos.</span></div>
     }
   }
+
+  <!-- Ventana para elegir las fechas del alquiler -->
+  <ion-modal [isOpen]="juegoAlquiler() !== null" (didDismiss)="cerrarAlquiler()" class="modal-fechas">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Alquilar</ion-title>
+          <ion-buttons slot="end"><ion-button (click)="cerrarAlquiler()">Cerrar</ion-button></ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <p class="muted"><strong>{{ juegoAlquiler()?.nombre }}</strong><br>
+          {{ juegoAlquiler()?.precio_diario }} €/día · {{ juegoAlquiler()?.precio_semanal }} €/semana ·
+          {{ juegoAlquiler()?.precio_mensual }} €/mes</p>
+        <div class="fechas">
+          <ion-input label="Fecha de inicio" label-placement="stacked" fill="outline" type="date"
+                     [min]="hoy" [value]="fechaInicio()" (ionInput)="fechaInicio.set($any($event).detail.value ?? '')"></ion-input>
+          <ion-input label="Fecha de fin" label-placement="stacked" fill="outline" type="date"
+                     [min]="fechaInicio() || hoy" [value]="fechaFin()" (ionInput)="fechaFin.set($any($event).detail.value ?? '')"></ion-input>
+          @if (errorFechas()) {
+            <span class="err">{{ errorFechas() }}</span>
+          }
+          <ion-button expand="block" (click)="confirmarAlquiler()">Confirmar alquiler</ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

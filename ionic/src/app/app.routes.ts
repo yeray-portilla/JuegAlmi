@@ -5,6 +5,11 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', loadComponent: () => import('./login/login.page').then(m => m.LoginPage) },
   {
+    path: 'mis-operaciones',
+    canActivate: [authGuard],
+    loadComponent: () => import('./mis-operaciones/mis-operaciones.page').then(m => m.MisOperacionesPage),
+  },
+  {
     path: 'tabs',
     canActivate: [authGuard],
 

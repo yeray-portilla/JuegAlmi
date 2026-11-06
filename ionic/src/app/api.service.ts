@@ -47,6 +47,29 @@ export interface Consola extends Producto {
   almacenamiento: string;
 }
 
+// Respuestas de comprar y alquilar
+export interface CompraRespuesta {
+  compra_id: number;
+  total: number;
+}
+
+export interface AlquilerRespuesta {
+  alquiler_id: number;
+  total: number;
+}
+
+// Una fila de GET /operaciones/mis-operaciones
+export interface Operacion {
+  tipo: 'compra' | 'alquiler' | 'reparacion';
+  id: number;
+  fecha: string; // yyyy-MM-dd (en alquileres, la fecha de inicio)
+  estado: string; // compra: completada; alquiler: pendiente | activo | finalizado
+  total: number | null;
+  // compra: [{nombre, cantidad, precio_unidad}]; alquiler: [{nombre}]
+  detalle?: { nombre: string; cantidad?: number; precio_unidad?: number }[];
+  dispositivo?: string; // solo reparaciones
+}
+
 // Linea de una compra: producto y unidades
 export interface LineaCompra {
   id: number;
@@ -128,15 +151,15 @@ export class ApiService {
   // ===================== Compras y alquileres =====================
 
   // Si el usuario niega el GPS, mandar latitud y longitud = 0
-  comprar(productos: LineaCompra[], latitud: number, longitud: number): Observable<any> {
-    return this.http.post(`${this.url}/operaciones/comprar`, { productos, latitud, longitud });
+  comprar(productos: LineaCompra[], latitud: number, longitud: number): Observable<CompraRespuesta> {
+    return this.http.post<CompraRespuesta>(`${this.url}/operaciones/comprar`, { productos, latitud, longitud });
   }
 
   // Fechas con formato yyyy-MM-dd. videojuegos = lista de ids
   alquilar(idsVideojuegos: number[], fecha_inicio: string, fecha_fin: string,
-           latitud: number, longitud: number): Observable<any> {
+           latitud: number, longitud: number): Observable<AlquilerRespuesta> {
     const videojuegos = idsVideojuegos.map(id => ({ id }));
-    return this.http.post(`${this.url}/operaciones/alquilar`,
+    return this.http.post<AlquilerRespuesta>(`${this.url}/operaciones/alquilar`,
       { videojuegos, fecha_inicio, fecha_fin, latitud, longitud });
   }
 
@@ -145,8 +168,8 @@ export class ApiService {
   }
 
   // Compras, alquileres y reparaciones del usuario
-  obtenerMisOperaciones(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.url}/operaciones/mis-operaciones`);
+  obtenerMisOperaciones(): Observable<Operacion[]> {
+    return this.http.get<Operacion[]>(`${this.url}/operaciones/mis-operaciones`);
   }
 
   // ===================== Soporte (usuario) =====================

@@ -7,7 +7,7 @@
     <ion-list lines="none">
       @for (o of opciones; track o) {
         <ion-menu-toggle auto-hide="false">
-          <ion-item button detail="false">{{ o }}</ion-item>
+          <ion-item button detail="false" (click)="abrir(o)">{{ o }}</ion-item>
         </ion-menu-toggle>
       }
       <ion-menu-toggle auto-hide="false">

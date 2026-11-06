@@ -21,6 +21,13 @@ export class TabsPage {
     addIcons({ phonePortraitOutline, gameControllerOutline, constructOutline, tvOutline });
   }
 
+// Opciones del menu lateral (de momento solo "Mis operaciones" tiene pantalla)
+abrir(opcion: string) {
+  if (opcion === 'Mis operaciones') {
+    this.router.navigateByUrl('/mis-operaciones');
+  }
+}
+
 salir() {
   this.auth.logout();
   this.router.navigateByUrl('/login');
