@@ -7,9 +7,11 @@
     @if (error) {
       <span class="err">{{ error }}</span>
     }
-<ion-button expand="block" [disabled]="cargando()" (click)="entrar()">
-  {{ cargando() ? 'Entrando...' : 'Entrar' }}
-</ion-button>
-    <ion-button expand="block" fill="clear">Crear cuenta</ion-button>
+    <ion-button expand="block" [disabled]="cargando()" (click)="entrar()">
+      {{ cargando() ? 'Entrando...' : 'Entrar' }}
+    </ion-button>
+    <p class="enlace-cuenta">
+      ¿No tienes cuenta? <button type="button" (click)="irARegistro()">Crear cuenta</button>
+    </p>
   </div>
 </ion-content>

@@ -1,0 +1,41 @@
+<ion-content class="ion-padding">
+  <div class="login">
+    <h1>Crea tu cuenta</h1>
+    <p class="muted">Regístrate para comprar, alquilar y pedir reparaciones en JuegAlmi.</p>
+
+    <ion-input label="Nombre de usuario" label-placement="stacked" fill="outline" type="text"
+               autocomplete="username" [maxlength]="MAX_USUARIO"
+               [value]="nombre()" (ionInput)="nombre.set(valor($event))"></ion-input>
+    @if (intentado() && errorNombre()) {
+      <span class="err">{{ errorNombre() }}</span>
+    }
+
+    <ion-input label="Correo" label-placement="stacked" fill="outline" type="email" inputmode="email"
+               autocomplete="email" [value]="email()" (ionInput)="email.set(valor($event))"></ion-input>
+    @if (intentado() && errorEmail()) {
+      <span class="err">{{ errorEmail() }}</span>
+    }
+
+    <ion-input label="Contraseña" label-placement="stacked" fill="outline" type="password"
+               autocomplete="new-password" [helperText]="'Mínimo ' + MIN_PASSWORD + ' caracteres'"
+               [value]="password()" (ionInput)="password.set(valor($event))"></ion-input>
+    @if (intentado() && errorPassword()) {
+      <span class="err">{{ errorPassword() }}</span>
+    }
+
+    <ion-input label="Repite la contraseña" label-placement="stacked" fill="outline" type="password"
+               autocomplete="new-password" [value]="repetir()" (ionInput)="repetir.set(valor($event))"
+               (keyup.enter)="crearCuenta()"></ion-input>
+    @if (intentado() && errorRepetir()) {
+      <span class="err">{{ errorRepetir() }}</span>
+    }
+
+    <ion-button expand="block" [disabled]="cargando()" (click)="crearCuenta()">
+      {{ cargando() ? 'Creando cuenta...' : 'Crear cuenta' }}
+    </ion-button>
+
+    <p class="enlace-cuenta">
+      ¿Ya tienes cuenta? <button type="button" (click)="irALogin()">Inicia sesión</button>
+    </p>
+  </div>
+</ion-content>

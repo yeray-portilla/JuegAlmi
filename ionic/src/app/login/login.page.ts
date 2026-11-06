@@ -46,6 +46,10 @@ export class LoginPage {
     });
   }
 
+  irARegistro() {
+    this.router.navigateByUrl('/registro');
+  }
+
   async mostrarToast(mensaje: string) {
     const t = await this.toast.create({ message: mensaje, duration: 2500, color: 'danger', position: 'bottom' });
     await t.present();
