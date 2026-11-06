@@ -5,7 +5,7 @@ import {
   IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { phonePortraitOutline, gameControllerOutline, constructOutline } from 'ionicons/icons';
+import { phonePortraitOutline, gameControllerOutline, constructOutline, tvOutline } from 'ionicons/icons';
 import { AuthService } from '../auth.service';
 
 @Component({
@@ -17,12 +17,13 @@ import { AuthService } from '../auth.service';
 export class TabsPage {
   opciones = ['Servicios', 'Ubicación', 'Galería', 'Historia', 'Mis operaciones'];
 
-  constructor(private router: Router, private auth: AuthService) {
-    addIcons({ phonePortraitOutline, gameControllerOutline, constructOutline });
+  constructor(private router: Router, public auth: AuthService) {
+    addIcons({ phonePortraitOutline, gameControllerOutline, constructOutline, tvOutline });
   }
 
 salir() {
   this.auth.logout();
   this.router.navigateByUrl('/login');
 }
+
 }

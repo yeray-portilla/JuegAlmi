@@ -1,0 +1,20 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-menu-button></ion-menu-button></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <h1 class="titulo">Consolas</h1>
+  @for (c of datos; track c.id) {
+    <div class="prod">
+      <img [src]="c.foto" [alt]="c.nombre" loading="lazy">
+      <div class="info">
+        <strong>{{ c.nombre }}</strong>
+        <span class="muted">{{ c.marca }} · {{ c.almacenamiento }}</span>
+        <span class="precio">{{ c.precio }} €</span>
+        <div class="botones"><ion-button size="small" fill="outline">Comprar</ion-button></div>
+      </div>
+    </div>
+  }
+</ion-content>

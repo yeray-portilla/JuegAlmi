@@ -1,8 +1,8 @@
 <ion-menu contentId="main">
   <ion-content>
     <div class="menu-head">
-      <strong>Nombre de usuario</strong>
-      <span>correo@ejemplo.com</span>
+      <strong>{{ auth.usuario?.nombre_usuario }}</strong>
+      <span>{{ auth.usuario?.email }}</span>
     </div>
     <ion-list lines="none">
       @for (o of opciones; track o) {
@@ -24,8 +24,12 @@
     <ion-tab-bar slot="bottom">
       <ion-tab-button tab="moviles">
         <ion-icon name="phone-portrait-outline"></ion-icon>
-        <ion-label>Móviles</ion-label>
+        <ion-label>Dispositivos</ion-label>
       </ion-tab-button>
+      <ion-tab-button tab="consolas">
+  <ion-icon name="tv-outline"></ion-icon>
+  <ion-label>Consolas</ion-label>
+</ion-tab-button>
       <ion-tab-button tab="videojuegos">
         <ion-icon name="game-controller-outline"></ion-icon>
         <ion-label>Videojuegos</ion-label>

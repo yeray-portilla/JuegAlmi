@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8000/api', 
-  mock: true,
+  apiUrl: 'https://juegalmi-shop.duckdns.org', 
+  mock: false,
 };
 
 /*

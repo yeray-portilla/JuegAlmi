@@ -11,6 +11,7 @@ export const routes: Routes = [
     loadComponent: () => import('./tabs/tabs.page').then(m => m.TabsPage),
     children: [
       { path: 'moviles', loadComponent: () => import('./moviles/moviles.page').then(m => m.MovilesPage) },
+      { path: 'consolas', loadComponent: () => import('./consolas/consolas.page').then(m => m.ConsolasPage) },
       { path: 'videojuegos', loadComponent: () => import('./videojuegos/videojuegos.page').then(m => m.VideojuegosPage) },
       { path: 'soporte', loadComponent: () => import('./soporte/soporte.page').then(m => m.SoportePage) },
       { path: '', redirectTo: 'moviles', pathMatch: 'full' },

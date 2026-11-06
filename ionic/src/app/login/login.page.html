@@ -2,7 +2,7 @@
   <div class="login">
     <h1>Hola de nuevo</h1>
     <p class="muted">Entra para ver el catálogo de JuegAlmi.</p>
-    <ion-input label="Correo" label-placement="stacked" fill="outline" type="email" [(ngModel)]="email"></ion-input>
+    <ion-input label="Correo o usuario" label-placement="stacked" fill="outline" type="text" [(ngModel)]="login"></ion-input>
     <ion-input label="Contraseña" label-placement="stacked" fill="outline" type="password" [(ngModel)]="password"></ion-input>
     @if (error) {
       <span class="err">{{ error }}</span>
