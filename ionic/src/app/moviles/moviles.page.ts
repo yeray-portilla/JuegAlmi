@@ -1,24 +1,58 @@
-import { Component } from '@angular/core';
-import { IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton } from '@ionic/angular';
+import { Component, OnInit, signal, computed } from '@angular/core';
+import {
+  IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonSpinner,
+  IonRefresher, IonRefresherContent,
+} from '@ionic/angular';
+import { ApiService, Dispositivo } from '../api.service';
 
 @Component({
   standalone: true,
   selector: 'app-moviles',
   templateUrl: './moviles.page.html',
-  imports: [IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton],
+  imports: [IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonSpinner,
+    IonRefresher, IonRefresherContent],
 })
-export class MovilesPage {
+export class MovilesPage implements OnInit {
   filtros = ['Todos', 'Smartphones', 'Tablets'];
-  filtro = 'Todos';
+  filtro = signal('Todos');
 
-  // Datos de ejemplo. TODO: sustituir por GET /api/dispositivos
-  datos = [
-    { id: 1, nombre: 'Smartphone X', tipo: 'Smartphones', precio: 449, foto: 'assets/icon/favicon.png' },
-    { id: 2, nombre: 'iPhone 14', tipo: 'Smartphones', precio: 799, foto: 'assets/icon/favicon.png' },
-    { id: 3, nombre: 'Tablet Y', tipo: 'Tablets', precio: 329, foto: 'assets/icon/favicon.png' },
-  ];
+  // Usamos signals: la app no lleva zone.js y asi Angular sabe cuando repintar
+  datos = signal<Dispositivo[]>([]); // telefonos y tablets juntos
+  cargando = signal(false);
+  error = signal('');
 
-  get lista() {
-    return this.filtro === 'Todos' ? this.datos : this.datos.filter(d => d.tipo === this.filtro);
+  constructor(public api: ApiService) {}
+
+  ngOnInit() {
+    this.cargar();
   }
+
+  // Pedimos telefonos y tablets de una vez y filtramos en la app
+  cargar(event?: any) {
+    this.cargando.set(true);
+    this.error.set('');
+    this.api.obtenerDispositivos().subscribe({
+      next: (lista) => {
+        this.datos.set(lista);
+        this.cargando.set(false);
+        event?.target.complete();
+      },
+      error: (e) => {
+        this.error.set(this.api.mensajeError(e));
+        this.cargando.set(false);
+        event?.target.complete();
+      },
+    });
+  }
+
+  // Lista filtrada: se recalcula sola cuando cambian datos o filtro
+  lista = computed(() => {
+    if (this.filtro() === 'Smartphones') {
+      return this.datos().filter(d => d.tipo === 'telefono');
+    }
+    if (this.filtro() === 'Tablets') {
+      return this.datos().filter(d => d.tipo === 'tablet');
+    }
+    return this.datos();
+  });
 }

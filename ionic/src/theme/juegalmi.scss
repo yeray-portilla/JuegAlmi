@@ -63,3 +63,10 @@ ion-textarea, ion-input {
   strong { font-size: 18px; color: #F2F5FF; } span { color: #A9B4D6; font-size: 14px; } }
 ion-menu ion-content { --background: #0A0F22; }
 ion-menu ion-item { --background: transparent; --color: #F2F5FF; --border-radius: 12px; margin: 0 8px; }
+// Spinner / mensaje de error / lista vacia, centrados
+.estado { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 0; text-align: center;
+  ion-spinner { color: #FF5A36; width: 40px; height: 40px; } }
+
+// Animacion sencilla: las tarjetas aparecen subiendo un poco
+.prod { animation: aparecer 0.35s ease-out both; }
+@keyframes aparecer { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }

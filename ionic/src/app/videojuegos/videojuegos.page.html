@@ -5,19 +5,35 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="cargar($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <h1 class="titulo">Videojuegos</h1>
-  @for (v of datos; track v.id) {
-    <div class="prod">
-      <img [src]="v.foto" [alt]="v.titulo" loading="lazy">
-      <div class="info">
-        <strong>{{ v.titulo }}</strong>
-        <span class="muted">{{ v.plataforma }}</span>
-        <span class="precio">{{ v.venta }} € · alquiler {{ v.alquiler }} €/día</span>
-        <div class="botones">
-          <ion-button size="small">Comprar</ion-button>
-          <ion-button size="small" fill="outline">Alquilar</ion-button>
+
+  @if (cargando() && datos().length === 0) {
+    <div class="estado"><ion-spinner name="crescent"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="estado">
+      <span class="err">{{ error() }}</span>
+      <ion-button size="small" fill="outline" (click)="cargar()">Reintentar</ion-button>
+    </div>
+  } @else {
+    @for (v of datos(); track v.id) {
+      <div class="prod">
+        <img [src]="api.urlFoto(v.foto_url)" [alt]="v.nombre" (error)="api.fotoRota($event)" loading="lazy">
+        <div class="info">
+          <strong>{{ v.nombre }}</strong>
+          <span class="muted">{{ v.marca }}</span>
+          <span class="precio">{{ v.precio }} € · alquiler {{ v.precio_diario }} €/día</span>
+          <div class="botones">
+            <ion-button size="small" [disabled]="v.stock === 0">Comprar</ion-button>
+            <ion-button size="small" fill="outline" [disabled]="v.copias_alquiler === 0">Alquilar</ion-button>
+          </div>
         </div>
       </div>
-    </div>
+    } @empty {
+      <div class="estado"><span class="muted">No hay videojuegos.</span></div>
+    }
   }
 </ion-content>

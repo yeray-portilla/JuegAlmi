@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonButton, IonInput, ToastController } from '@ionic/angular';
@@ -13,7 +13,7 @@ export class LoginPage {
   login = ''; // email o nombre de usuario
   password = '';
   error = '';
-  cargando = false;
+  cargando = signal(false); // signal: sin zone.js, asi el boton se repinta
 
   constructor(private router: Router, private auth: AuthService, private toast: ToastController) {}
 
@@ -30,15 +30,15 @@ export class LoginPage {
       return;
     }
     this.error = '';
-    this.cargando = true;
+    this.cargando.set(true);
     this.auth.login(this.login, this.password).subscribe({
       next: () => {
-        this.cargando = false;
+        this.cargando.set(false);
         this.password = '';
         this.router.navigateByUrl('/tabs/moviles');
       },
       error: (e) => {
-        this.cargando = false;
+        this.cargando.set(false);
         // La API manda {"error": "mensaje"}; si no hay respuesta, es problema de conexion
         const mensaje = e.error?.error ?? 'No se pudo conectar con el servidor.';
         this.mostrarToast(mensaje);

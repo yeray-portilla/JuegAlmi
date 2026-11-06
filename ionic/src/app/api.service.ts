@@ -16,6 +16,37 @@ export interface LoginRespuesta {
   usuario: Usuario;
 }
 
+// Datos comunes de cualquier producto del catalogo
+export interface Producto {
+  id: number;
+  nombre: string;
+  marca: string; // fabricante o editora ("Indie" / "Por definir" si no tiene)
+  descripcion: string | null;
+  precio: number;
+  stock: number;
+  foto_url: string | null;
+}
+
+// Telefono o tablet
+export interface Dispositivo extends Producto {
+  modelo: string;
+  pulgadas: number;
+  almacenamiento: string;
+  tipo: 'telefono' | 'tablet';
+}
+
+export interface Videojuego extends Producto {
+  precio_diario: number;
+  precio_semanal: number;
+  precio_mensual: number;
+  copias_alquiler: number;
+}
+
+export interface Consola extends Producto {
+  modelo: string;
+  almacenamiento: string;
+}
+
 // Linea de una compra: producto y unidades
 export interface LineaCompra {
   id: number;
@@ -53,21 +84,45 @@ export class ApiService {
 
   // ===================== Catalogo =====================
 
+  // Foto de un producto: si no tiene, el icono de la app; si la ruta es relativa, le ponemos el servidor delante
+  urlFoto(ruta: string | null): string {
+    if (!ruta) {
+      return 'assets/icon/favicon.png';
+    }
+    if (ruta.startsWith('http')) {
+      return ruta;
+    }
+    return environment.apiUrl + (ruta.startsWith('/') ? '' : '/') + ruta;
+  }
+
+  // Si una foto no carga, ponemos el icono de la app (solo una vez, para no entrar en bucle)
+  fotoRota(evento: Event) {
+    const img = evento.target as HTMLImageElement;
+    if (!img.src.endsWith('assets/icon/favicon.png')) {
+      img.src = 'assets/icon/favicon.png';
+    }
+  }
+
+  // Texto del error para el usuario: la API manda {"error": "mensaje"}
+  mensajeError(e: any): string {
+    return e?.error?.error ?? 'No se pudo conectar con el servidor.';
+  }
+
   // tipo opcional: 'telefono' o 'tablet' (sin tipo salen los dos)
-  obtenerDispositivos(tipo?: 'telefono' | 'tablet'): Observable<any[]> {
+  obtenerDispositivos(tipo?: 'telefono' | 'tablet'): Observable<Dispositivo[]> {
     let params = new HttpParams();
     if (tipo) {
       params = params.set('tipo', tipo);
     }
-    return this.http.get<any[]>(`${this.url}/productos/dispositivos`, { params });
+    return this.http.get<Dispositivo[]>(`${this.url}/productos/dispositivos`, { params });
   }
 
-  obtenerVideojuegos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.url}/productos/videojuegos`);
+  obtenerVideojuegos(): Observable<Videojuego[]> {
+    return this.http.get<Videojuego[]>(`${this.url}/productos/videojuegos`);
   }
 
-  obtenerConsolas(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.url}/productos/consolas`);
+  obtenerConsolas(): Observable<Consola[]> {
+    return this.http.get<Consola[]>(`${this.url}/productos/consolas`);
   }
 
   // ===================== Compras y alquileres =====================

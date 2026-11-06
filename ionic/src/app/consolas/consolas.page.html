@@ -5,16 +5,32 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="cargar($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <h1 class="titulo">Consolas</h1>
-  @for (c of datos; track c.id) {
-    <div class="prod">
-      <img [src]="c.foto" [alt]="c.nombre" loading="lazy">
-      <div class="info">
-        <strong>{{ c.nombre }}</strong>
-        <span class="muted">{{ c.marca }} · {{ c.almacenamiento }}</span>
-        <span class="precio">{{ c.precio }} €</span>
-        <div class="botones"><ion-button size="small" fill="outline">Comprar</ion-button></div>
-      </div>
+
+  @if (cargando() && datos().length === 0) {
+    <div class="estado"><ion-spinner name="crescent"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="estado">
+      <span class="err">{{ error() }}</span>
+      <ion-button size="small" fill="outline" (click)="cargar()">Reintentar</ion-button>
     </div>
+  } @else {
+    @for (c of datos(); track c.id) {
+      <div class="prod">
+        <img [src]="api.urlFoto(c.foto_url)" [alt]="c.nombre" (error)="api.fotoRota($event)" loading="lazy">
+        <div class="info">
+          <strong>{{ c.nombre }}</strong>
+          <span class="muted">{{ c.marca }} · {{ c.almacenamiento }}</span>
+          <span class="precio">{{ c.precio }} €</span>
+          <div class="botones"><ion-button size="small" fill="outline" [disabled]="c.stock === 0">Comprar</ion-button></div>
+        </div>
+      </div>
+    } @empty {
+      <div class="estado"><span class="muted">No hay consolas.</span></div>
+    }
   }
 </ion-content>

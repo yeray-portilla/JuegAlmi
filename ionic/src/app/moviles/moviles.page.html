@@ -5,21 +5,37 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="cargar($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <h1 class="titulo">Móviles</h1>
   <div class="filtros">
     @for (f of filtros; track f) {
-      <button [class.on]="f === filtro" (click)="filtro = f">{{ f }}</button>
+      <button [class.on]="f === filtro()" (click)="filtro.set(f)">{{ f }}</button>
     }
   </div>
-  @for (p of lista; track p.id) {
-    <div class="prod">
-      <img [src]="p.foto" [alt]="p.nombre" loading="lazy">
-      <div class="info">
-        <strong>{{ p.nombre }}</strong>
-        <span class="muted">{{ p.tipo }}</span>
-        <span class="precio">{{ p.precio }} €</span>
-        <div class="botones"><ion-button size="small" fill="outline">Comprar</ion-button></div>
-      </div>
+
+  @if (cargando() && datos().length === 0) {
+    <div class="estado"><ion-spinner name="crescent"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="estado">
+      <span class="err">{{ error() }}</span>
+      <ion-button size="small" fill="outline" (click)="cargar()">Reintentar</ion-button>
     </div>
+  } @else {
+    @for (p of lista(); track p.id) {
+      <div class="prod">
+        <img [src]="api.urlFoto(p.foto_url)" [alt]="p.nombre" (error)="api.fotoRota($event)" loading="lazy">
+        <div class="info">
+          <strong>{{ p.nombre }}</strong>
+          <span class="muted">{{ p.marca }} · {{ p.tipo === 'telefono' ? 'Smartphone' : 'Tablet' }} · {{ p.almacenamiento }}</span>
+          <span class="precio">{{ p.precio }} €</span>
+          <div class="botones"><ion-button size="small" fill="outline" [disabled]="p.stock === 0">Comprar</ion-button></div>
+        </div>
+      </div>
+    } @empty {
+      <div class="estado"><span class="muted">No hay productos.</span></div>
+    }
   }
 </ion-content>
