@@ -9,6 +9,7 @@
     android:background="@color/surface_dark">
 
     <TextView
+        android:id="@+id/nav_header_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/nav_header_name"
@@ -17,6 +18,7 @@
         android:textStyle="bold" />
 
     <TextView
+        android:id="@+id/nav_header_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/nav_header_email"

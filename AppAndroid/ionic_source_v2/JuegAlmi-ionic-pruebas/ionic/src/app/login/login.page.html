@@ -1,0 +1,17 @@
+<ion-content class="ion-padding">
+  <div class="login">
+    <h1>Hola de nuevo</h1>
+    <p class="muted">Entra para ver el catálogo de JuegAlmi.</p>
+    <ion-input label="Correo o usuario" label-placement="stacked" fill="outline" type="text" [(ngModel)]="login"></ion-input>
+    <ion-input label="Contraseña" label-placement="stacked" fill="outline" type="password" [(ngModel)]="password"></ion-input>
+    @if (error) {
+      <span class="err">{{ error }}</span>
+    }
+    <ion-button expand="block" [disabled]="cargando()" (click)="entrar()">
+      {{ cargando() ? 'Entrando...' : 'Entrar' }}
+    </ion-button>
+    <p class="enlace-cuenta">
+      ¿No tienes cuenta? <button type="button" (click)="irARegistro()">Crear cuenta</button>
+    </p>
+  </div>
+</ion-content>

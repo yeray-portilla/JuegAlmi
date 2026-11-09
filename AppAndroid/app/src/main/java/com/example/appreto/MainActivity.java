@@ -3,13 +3,17 @@ package com.example.appreto;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+
+import com.example.appreto.api.SharedPrefManager;
 import com.example.appreto.fragments.LoginFragment;
+import com.example.appreto.fragments.MisOperacionesFragment;
 import com.example.appreto.fragments.MobilesFragment;
 import com.example.appreto.fragments.SupportFragment;
 import com.google.android.material.appbar.AppBarLayout;
@@ -42,7 +46,11 @@ public class MainActivity extends AppCompatActivity {
             drawerLayout.closeDrawer(GravityCompat.START);
             int id = item.getItemId();
             if (id == R.id.nav_logout) {
+                SharedPrefManager.getInstance(this).clear();
                 showLogin();
+            } else if (id == R.id.nav_operations) {
+                toolbar.setTitle(R.string.nav_operations);
+                loadFragment(new MisOperacionesFragment());
             }
             return true;
         });
@@ -70,7 +78,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         if (savedInstanceState == null) {
-            showLogin();
+            String token = SharedPrefManager.getInstance(this).getToken();
+            if (token != null && !token.isEmpty()) {
+                onLoginSuccess();
+            } else {
+                showLogin();
+            }
         }
     }
 
@@ -86,6 +99,18 @@ public class MainActivity extends AppCompatActivity {
         appBarLayout.setVisibility(View.VISIBLE);
         bottomNav.setVisibility(View.VISIBLE);
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+
+        // Actualizar header del navigation view con los datos del usuario logueado
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        TextView navUsername = headerView.findViewById(R.id.nav_header_name);
+        TextView navEmail = headerView.findViewById(R.id.nav_header_email);
+
+        String username = SharedPrefManager.getInstance(this).getUsername();
+        String email = SharedPrefManager.getInstance(this).getEmail();
+
+        navUsername.setText(username);
+        navEmail.setText(email);
 
         bottomNav.setSelectedItemId(R.id.nav_devices);
     }

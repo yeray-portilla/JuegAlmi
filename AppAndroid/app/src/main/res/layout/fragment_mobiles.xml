@@ -10,11 +10,14 @@
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_dark"
+        android:layout_margin="16dp"
+        android:background="@drawable/tab_background"
+        app:tabBackground="@drawable/tab_selector"
+        app:tabIndicatorHeight="0dp"
+        app:tabRippleColor="@null"
         app:tabTextColor="@color/text_secondary"
-        app:tabSelectedTextColor="@color/text_primary"
-        app:tabIndicatorColor="@color/primary"
-        app:tabMode="scrollable"
+        app:tabSelectedTextColor="@color/price_yellow"
+        app:tabMode="fixed"
         android:visibility="gone">
 
         <com.google.android.material.tabs.TabItem
