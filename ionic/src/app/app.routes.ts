@@ -10,10 +10,21 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./mis-operaciones/mis-operaciones.page').then(m => m.MisOperacionesPage),
   },
+  // Informacion de las tiendas (menu lateral): Historia, Ubicacion y Galeria
   {
-    path: 'tiendas',
+    path: 'historia',
     canActivate: [authGuard],
-    loadComponent: () => import('./tiendas/tiendas.page').then(m => m.TiendasPage),
+    loadComponent: () => import('./historia/historia.page').then(m => m.HistoriaPage),
+  },
+  {
+    path: 'ubicacion',
+    canActivate: [authGuard],
+    loadComponent: () => import('./ubicacion/ubicacion.page').then(m => m.UbicacionPage),
+  },
+  {
+    path: 'galeria',
+    canActivate: [authGuard],
+    loadComponent: () => import('./galeria/galeria.page').then(m => m.GaleriaPage),
   },
   {
     path: 'admin',

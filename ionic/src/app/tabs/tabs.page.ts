@@ -21,19 +21,19 @@ export class TabsPage {
     addIcons({ phonePortraitOutline, gameControllerOutline, constructOutline, tvOutline });
   }
 
-// Opciones del menu lateral. Ubicación, Galería e Historia abren Tiendas con esa parte ya elegida.
+// Opciones del menu lateral. Ubicación, Galería e Historia tienen cada una su pagina.
 abrir(opcion: string) {
   if (opcion === 'Servicios') {
     this.router.navigateByUrl('/tabs');
   }
   if (opcion === 'Ubicación') {
-    this.router.navigateByUrl('/tiendas?seccion=ubicacion');
+    this.router.navigateByUrl('/ubicacion');
   }
   if (opcion === 'Galería') {
-    this.router.navigateByUrl('/tiendas?seccion=galeria');
+    this.router.navigateByUrl('/galeria');
   }
   if (opcion === 'Historia') {
-    this.router.navigateByUrl('/tiendas?seccion=historia');
+    this.router.navigateByUrl('/historia');
   }
   if (opcion === 'Mis operaciones') {
     this.router.navigateByUrl('/mis-operaciones');

@@ -117,15 +117,22 @@ ion-menu ion-item { --background: transparent; --color: #F2F5FF; --border-radius
 .solicitud { .descripcion { color: #F2F5FF; font-size: 14px; }
   a { color: #FFC53D; } }
 
-// Tiendas
-.tienda { .cabecera { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+// Tiendas (paginas Historia, Ubicacion y Galeria): tarjeta con el mismo aspecto que .prod
+.tienda { display: flex; flex-direction: column; gap: 4px; background: #151E3A; color: #F2F5FF;
+  border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 12px; margin-bottom: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35); animation: aparecer 0.35s ease-out both;
+  strong { color: #F2F5FF; }
+  .cabecera { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
   .distancia { color: #FFC53D; font-size: 13px; font-weight: 600; white-space: nowrap; }
   .historia { color: #F2F5FF; font-size: 14px; line-height: 1.5; margin: 8px 0 0; }
-  .botones { margin-top: 8px; }
-  .mapa { height: 180px; border-radius: 12px; margin-top: 8px; z-index: 0; background: #1F2A4D; }
+  .botones { display: flex; gap: 8px; margin-top: 8px; }
+  ion-button { --background: #FF5A36; --color: #12182B; }
+  // Mapa: altura fija y nada se sale de la tarjeta
+  .mapa { height: 220px; overflow: hidden; position: relative; z-index: 0; border-radius: 12px; margin-top: 8px; background: #1F2A4D; }
   // Galeria con desplazamiento horizontal
   .galeria { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; margin-top: 8px; padding-bottom: 6px;
-    img { flex: 0 0 auto; width: 220px; height: 150px; object-fit: cover; scroll-snap-align: start; } } }
+    scrollbar-width: thin; scrollbar-color: #FF5A36 transparent; // barra de desplazamiento con los colores de la app
+    img { flex: 0 0 auto; width: 220px; height: 150px; object-fit: cover; border-radius: 10px; background: #1F2A4D; scroll-snap-align: start; } } }
 
 // =====================================================================
 // VENTANAS EMERGENTES (alert, select, popover, action sheet, modal, loading)

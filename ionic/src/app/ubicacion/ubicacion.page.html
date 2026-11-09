@@ -1,0 +1,43 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="/tabs/moviles"></ion-back-button></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="cargar($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <h1 class="titulo">Ubicación</h1>
+
+  @if (tiendas.cargando() && tiendas.datos().length === 0) {
+    <div class="estado"><ion-spinner name="crescent"></ion-spinner></div>
+  } @else if (tiendas.error()) {
+    <div class="estado">
+      <span class="err">{{ tiendas.error() }}</span>
+      <ion-button size="small" fill="outline" (click)="cargar()">Reintentar</ion-button>
+    </div>
+  } @else {
+    @for (t of tiendas.datos(); track t.id) {
+      <div class="tienda">
+        <div class="cabecera">
+          <strong>{{ t.nombre }}</strong>
+          @if (tiendas.distancia(t)) {
+            <span class="distancia">{{ tiendas.distancia(t) }}</span>
+          }
+        </div>
+        <span class="muted"><ion-icon name="location-outline"></ion-icon> {{ t.direccion }}</span>
+        <!-- Mapa de Leaflet (lo crea pintarMapas() en el .ts) -->
+        <div class="mapa" [id]="'mapa-' + t.id"></div>
+        <div class="botones">
+          <ion-button size="small" (click)="tiendas.comoLlegar(t)">
+            <ion-icon slot="start" name="navigate-outline"></ion-icon>Cómo llegar
+          </ion-button>
+        </div>
+      </div>
+    } @empty {
+      <div class="estado"><span class="muted">No hay tiendas.</span></div>
+    }
+  }
+</ion-content>
