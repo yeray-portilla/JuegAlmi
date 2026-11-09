@@ -11,6 +11,11 @@ export const routes: Routes = [
     loadComponent: () => import('./mis-operaciones/mis-operaciones.page').then(m => m.MisOperacionesPage),
   },
   {
+    path: 'tiendas',
+    canActivate: [authGuard],
+    loadComponent: () => import('./tiendas/tiendas.page').then(m => m.TiendasPage),
+  },
+  {
     path: 'admin',
     canActivate: [authGuard, adminGuard],
     loadComponent: () => import('./admin/admin.page').then(m => m.AdminPage),

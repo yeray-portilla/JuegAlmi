@@ -21,8 +21,20 @@ export class TabsPage {
     addIcons({ phonePortraitOutline, gameControllerOutline, constructOutline, tvOutline });
   }
 
-// Opciones del menu lateral (de momento solo "Mis operaciones" y "Administración" tienen pantalla)
+// Opciones del menu lateral. Ubicación, Galería e Historia abren Tiendas con esa parte ya elegida.
 abrir(opcion: string) {
+  if (opcion === 'Servicios') {
+    this.router.navigateByUrl('/tabs');
+  }
+  if (opcion === 'Ubicación') {
+    this.router.navigateByUrl('/tiendas?seccion=ubicacion');
+  }
+  if (opcion === 'Galería') {
+    this.router.navigateByUrl('/tiendas?seccion=galeria');
+  }
+  if (opcion === 'Historia') {
+    this.router.navigateByUrl('/tiendas?seccion=historia');
+  }
   if (opcion === 'Mis operaciones') {
     this.router.navigateByUrl('/mis-operaciones');
   }
