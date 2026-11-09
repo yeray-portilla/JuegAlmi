@@ -1,18 +1,20 @@
 import { Component, computed, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonIcon, IonSpinner,
   IonSegment, IonSegmentButton, IonLabel, IonTextarea, IonSelect, IonSelectOption, IonInput,
-  IonRefresher, IonRefresherContent, IonModal, IonTitle, AlertController,
+  IonRefresher, IonRefresherContent,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { cameraOutline, trashOutline } from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { firstValueFrom, forkJoin } from 'rxjs';
-import { ApiService, Aparato, Departamento, Marca, Operacion, Tienda } from '../api.service';
+import { ApiService, Aparato, Departamento, Marca, Tienda } from '../api.service';
 import { AvisoService } from '../aviso.service';
 import { UbicacionService } from '../ubicacion.service';
 
-type Vista = 'aparatos' | 'pedir' | 'solicitudes';
+// Las solicitudes ya enviadas se ven en Mis operaciones > Mis solicitudes
+type Vista = 'aparatos' | 'pedir';
 
 @Component({
   standalone: true,
@@ -21,7 +23,7 @@ type Vista = 'aparatos' | 'pedir' | 'solicitudes';
   imports: [
     IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonIcon, IonSpinner,
     IonSegment, IonSegmentButton, IonLabel, IonTextarea, IonSelect, IonSelectOption, IonInput,
-    IonRefresher, IonRefresherContent, IonModal, IonTitle,
+    IonRefresher, IonRefresherContent,
   ],
 })
 export class SoportePage {
@@ -40,7 +42,6 @@ export class SoportePage {
   departamentos = signal<Departamento[]>([]);
   tiendas = signal<Tienda[]>([]);
   aparatos = signal<Aparato[]>([]);
-  solicitudes = signal<Operacion[]>([]); // las reparaciones de /operaciones/mis-operaciones
 
   // ---- Formulario "Mis aparatos" ----
   nuevaMarca = signal<number | null>(null);
@@ -53,10 +54,6 @@ export class SoportePage {
   descripcion = signal('');
   fotoBase64 = signal(''); // sin el prefijo "data:image/...;base64,"
   fotoFormato = signal('jpeg');
-
-  // ---- Ventana "Editar descripcion" ----
-  editando = signal<Operacion | null>(null); // null = ventana cerrada
-  textoEdicion = signal('');
 
   // true si la API ya manda los departamentos de cada tienda (cambio del backend)
   hayFiltroTiendas = computed(() => this.tiendas().some(t => Array.isArray(t.departamentos)));
@@ -78,7 +75,7 @@ export class SoportePage {
     public api: ApiService,
     private aviso: AvisoService,
     private ubicacion: UbicacionService,
-    private alertas: AlertController,
+    private router: Router,
   ) {
     addIcons({ cameraOutline, trashOutline });
   }
@@ -97,14 +94,12 @@ export class SoportePage {
       departamentos: this.api.obtenerDepartamentos(),
       tiendas: this.api.obtenerTiendas(),
       aparatos: this.api.obtenerMisDispositivos(),
-      operaciones: this.api.obtenerMisOperaciones(),
     }).subscribe({
       next: (r) => {
         this.marcas.set(r.marcas);
         this.departamentos.set(r.departamentos);
         this.tiendas.set(r.tiendas);
         this.aparatos.set(r.aparatos);
-        this.solicitudes.set(r.operaciones.filter(o => o.tipo === 'reparacion'));
         this.cargando.set(false);
         event?.target.complete();
       },
@@ -116,16 +111,10 @@ export class SoportePage {
     });
   }
 
-  // Recarga solo aparatos y solicitudes (despues de guardar algo)
-  private recargarMisDatos() {
-    forkJoin({
-      aparatos: this.api.obtenerMisDispositivos(),
-      operaciones: this.api.obtenerMisOperaciones(),
-    }).subscribe({
-      next: (r) => {
-        this.aparatos.set(r.aparatos);
-        this.solicitudes.set(r.operaciones.filter(o => o.tipo === 'reparacion'));
-      },
+  // Recarga solo mis aparatos (despues de guardar uno)
+  private recargarAparatos() {
+    this.api.obtenerMisDispositivos().subscribe({
+      next: (lista) => this.aparatos.set(lista),
       error: (e) => this.aviso.mostrar(this.api.mensajeError(e), 'danger'),
     });
   }
@@ -151,7 +140,7 @@ export class SoportePage {
       const yaEstaba = this.aparatos().some(a => a.id === aparato.id);
       this.aviso.mostrar(yaEstaba ? 'Ya tenías ese aparato guardado.' : 'Aparato guardado.');
       this.nuevoModelo.set('');
-      this.recargarMisDatos();
+      this.recargarAparatos();
     } catch (e) {
       this.aviso.mostrar(this.api.mensajeError(e), 'danger');
     }
@@ -221,83 +210,12 @@ export class SoportePage {
         ...(this.fotoBase64() ? { foto_base64: this.fotoBase64() } : {}),
       }));
       this.aviso.mostrar('Solicitud enviada. Un administrador la revisará.');
-      // Limpiamos el formulario y vamos a "Mis solicitudes"
+      // Limpiamos el formulario y vamos a Mis operaciones > Mis solicitudes
       this.aparatoElegido.set(null);
       this.tiendaElegida.set(null);
       this.descripcion.set('');
       this.fotoBase64.set('');
-      this.vista.set('solicitudes');
-      this.recargarMisDatos();
-    } catch (e) {
-      this.aviso.mostrar(this.api.mensajeError(e), 'danger');
-    }
-    this.enviando.set(false);
-  }
-
-  // =================== Mis solicitudes ===================
-
-  // Texto que se ve para cada estado
-  textoEstado(estado: string): string {
-    const textos: Record<string, string> = {
-      pendiente: 'Pendiente de revisar',
-      rechazada: 'Rechazada',
-      en_proceso: 'En reparación',
-      completada: 'Reparada',
-    };
-    return textos[estado] ?? estado;
-  }
-
-  // Abre la ventana con la descripcion actual
-  editarDescripcion(solicitud: Operacion) {
-    this.textoEdicion.set(solicitud.descripcion ?? '');
-    this.editando.set(solicitud);
-  }
-
-  cerrarEdicion() {
-    this.editando.set(null);
-  }
-
-  async guardarEdicion() {
-    const solicitud = this.editando();
-    const texto = this.textoEdicion().trim();
-    if (!solicitud) {
-      return;
-    }
-    if (!texto) {
-      this.aviso.mostrar('La descripción no puede estar vacía.', 'danger');
-      return;
-    }
-    this.enviando.set(true);
-    try {
-      await firstValueFrom(this.api.editarSolicitud(solicitud.solicitud_id ?? solicitud.id, texto));
-      this.aviso.mostrar('Descripción actualizada.');
-      this.cerrarEdicion();
-      this.recargarMisDatos();
-    } catch (e) {
-      this.aviso.mostrar(this.api.mensajeError(e), 'danger');
-    }
-    this.enviando.set(false);
-  }
-
-  async cancelarSolicitud(solicitud: Operacion) {
-    const alerta = await this.alertas.create({
-      header: 'Cancelar solicitud',
-      message: `¿Seguro que quieres cancelar la reparación de "${solicitud.dispositivo}"?`,
-      buttons: [
-        { text: 'No', role: 'cancel' },
-        { text: 'Sí, cancelar', role: 'confirm' },
-      ],
-    });
-    await alerta.present();
-    const { role } = await alerta.onDidDismiss();
-    if (role !== 'confirm') {
-      return;
-    }
-    this.enviando.set(true);
-    try {
-      await firstValueFrom(this.api.cancelarSolicitud(solicitud.solicitud_id ?? solicitud.id));
-      this.aviso.mostrar('Solicitud cancelada.');
-      this.recargarMisDatos();
+      this.router.navigateByUrl('/mis-operaciones?vista=solicitudes');
     } catch (e) {
       this.aviso.mostrar(this.api.mensajeError(e), 'danger');
     }

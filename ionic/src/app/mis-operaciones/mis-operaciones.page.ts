@@ -1,7 +1,8 @@
 import { Component, computed, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import {
   IonHeader, IonToolbar, IonButtons, IonBackButton, IonContent, IonButton, IonSpinner,
-  IonRefresher, IonRefresherContent, IonSegment, IonSegmentButton, IonLabel,
+  IonRefresher, IonRefresherContent, IonSegment, IonSegmentButton, IonLabel, AlertController,
 } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
 import { ApiService, Operacion } from '../api.service';
@@ -19,13 +20,27 @@ export class MisOperacionesPage {
   datos = signal<Operacion[]>([]);
   cargando = signal(false);
   error = signal('');
-  vista = signal<'compra' | 'alquiler'>('compra'); // pestaña elegida arriba
+  // Pestaña elegida arriba. 'reparacion' = "Mis solicitudes" (coincide con el tipo que manda la API)
+  vista = signal<'compra' | 'alquiler' | 'reparacion'>('compra');
   devolviendo = signal<number | null>(null); // id del alquiler que se esta devolviendo
+  cancelando = signal<number | null>(null); // id de la solicitud que se esta cancelando
 
-  // Solo compras o solo alquileres, segun la pestaña (las reparaciones iran en Soporte)
+  // Solo las operaciones de la pestaña elegida (compras, alquileres o solicitudes de reparacion)
   lista = computed(() => this.datos().filter(o => o.tipo === this.vista()));
 
-  constructor(public api: ApiService, private aviso: AvisoService) {}
+  constructor(
+    public api: ApiService,
+    private aviso: AvisoService,
+    private alertas: AlertController,
+    ruta: ActivatedRoute,
+  ) {
+    // Desde Soporte, al enviar una solicitud, se abre /mis-operaciones?vista=solicitudes
+    ruta.queryParamMap.subscribe(params => {
+      if (params.get('vista') === 'solicitudes') {
+        this.vista.set('reparacion');
+      }
+    });
+  }
 
   // Cada vez que se entra en la pantalla, recargamos
   ionViewWillEnter() {
@@ -70,6 +85,45 @@ export class MisOperacionesPage {
       this.aviso.mostrar(this.api.mensajeError(e), 'danger');
     }
     this.devolviendo.set(null);
+    this.cargar();
+  }
+
+  // =================== Mis solicitudes (reparaciones) ===================
+
+  // Texto que se ve para cada estado
+  textoEstado(estado: string): string {
+    const textos: Record<string, string> = {
+      pendiente: 'Pendiente de revisar',
+      rechazada: 'Rechazada',
+      en_proceso: 'En reparación',
+      completada: 'Reparada',
+    };
+    return textos[estado] ?? estado;
+  }
+
+  // Cancelar una solicitud pendiente (pregunta antes)
+  async cancelarSolicitud(solicitud: Operacion) {
+    const alerta = await this.alertas.create({
+      header: 'Cancelar solicitud',
+      message: `¿Seguro que quieres cancelar la reparación de "${solicitud.dispositivo}"?`,
+      buttons: [
+        { text: 'No', role: 'cancel' },
+        { text: 'Sí, cancelar', role: 'confirm' },
+      ],
+    });
+    await alerta.present();
+    const { role } = await alerta.onDidDismiss();
+    if (role !== 'confirm') {
+      return;
+    }
+    this.cancelando.set(solicitud.id);
+    try {
+      await firstValueFrom(this.api.cancelarSolicitud(solicitud.solicitud_id ?? solicitud.id));
+      this.aviso.mostrar('Solicitud cancelada.');
+    } catch (e) {
+      this.aviso.mostrar(this.api.mensajeError(e), 'danger');
+    }
+    this.cancelando.set(null);
     this.cargar();
   }
 }

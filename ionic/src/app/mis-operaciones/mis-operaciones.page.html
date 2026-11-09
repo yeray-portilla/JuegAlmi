@@ -14,6 +14,7 @@
   <ion-segment [value]="vista()" (ionChange)="cambiarVista($event)">
     <ion-segment-button value="compra"><ion-label>Compras</ion-label></ion-segment-button>
     <ion-segment-button value="alquiler"><ion-label>Alquileres</ion-label></ion-segment-button>
+    <ion-segment-button value="reparacion"><ion-label>Mis solicitudes</ion-label></ion-segment-button>
   </ion-segment>
 
   @if (cargando() && datos().length === 0) {
@@ -25,6 +26,32 @@
     </div>
   } @else {
     @for (op of lista(); track op.tipo + op.id) {
+      @if (op.tipo === 'reparacion') {
+        <!-- Solicitud de reparacion: estado, foto, motivo del rechazo y precio de la reparacion -->
+        <div class="prod">
+          @if (op.url_foto) {
+            <img [src]="api.urlFoto(op.url_foto)" [alt]="op.dispositivo" (error)="api.fotoRota($event)" loading="lazy">
+          }
+          <div class="info">
+            <strong>{{ op.dispositivo }}</strong>
+            <span class="muted">{{ op.fecha }} · <span [class]="'estado-op texto ' + op.estado">{{ textoEstado(op.estado) }}</span></span>
+            <span class="muted">{{ op.descripcion }}</span>
+            @if (op.estado === 'rechazada' && op.motivo_rechazo) {
+              <span class="err">Motivo: {{ op.motivo_rechazo }}</span>
+            }
+            @if (op.total !== null) {
+              <span class="precio">{{ op.total }} €</span>
+            }
+            @if (op.estado === 'pendiente') {
+              <div class="botones">
+                <ion-button size="small" fill="outline" [disabled]="cancelando() !== null" (click)="cancelarSolicitud(op)">
+                  {{ cancelando() === op.id ? 'Cancelando...' : 'Cancelar' }}
+                </ion-button>
+              </div>
+            }
+          </div>
+        </div>
+      } @else {
       <div class="prod">
         <div class="info">
           <strong>{{ op.tipo === 'compra' ? 'Compra' : 'Alquiler' }} #{{ op.id }}</strong>
@@ -48,9 +75,16 @@
           }
         </div>
       </div>
+      }
     } @empty {
       <div class="estado">
-        <span class="muted">{{ vista() === 'compra' ? 'Todavía no has comprado nada.' : 'Todavía no has alquilado nada.' }}</span>
+        <span class="muted">
+          @switch (vista()) {
+            @case ('compra') { Todavía no has comprado nada. }
+            @case ('alquiler') { Todavía no has alquilado nada. }
+            @case ('reparacion') { No has pedido ninguna reparación. }
+          }
+        </span>
       </div>
     }
   }
