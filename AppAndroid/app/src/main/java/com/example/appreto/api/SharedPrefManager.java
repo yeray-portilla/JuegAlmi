@@ -3,12 +3,17 @@ package com.example.appreto.api;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class SharedPrefManager {
     private static final String SHARED_PREF_NAME = "juegalmi_prefs";
     private static final String KEY_TOKEN = "key_token";
     private static final String KEY_USERNAME = "key_username";
     private static final String KEY_EMAIL = "key_email";
-    
+    private static final String KEY_ROLES = "key_roles";
+
     private static SharedPrefManager instance;
     private Context ctx;
 
@@ -23,12 +28,19 @@ public class SharedPrefManager {
         return instance;
     }
 
-    public void saveUser(String token, String username, String email) {
+    // Guarda los datos del usuario tras el login. Los roles vienen de la API (ej. ["ROLE_USER", "ROLE_ADMIN"])
+    public void saveUser(String token, String username, String email, List<String> roles) {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(KEY_TOKEN, token);
         editor.putString(KEY_USERNAME, username);
         editor.putString(KEY_EMAIL, email);
+        // SharedPreferences no guarda listas, pero si conjuntos de textos
+        Set<String> conjuntoRoles = new HashSet<>();
+        if (roles != null) {
+            conjuntoRoles.addAll(roles);
+        }
+        editor.putStringSet(KEY_ROLES, conjuntoRoles);
         editor.apply();
     }
 
@@ -36,7 +48,7 @@ public class SharedPrefManager {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString(KEY_TOKEN, null);
     }
-    
+
     public String getUsername() {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString(KEY_USERNAME, "Usuario");
@@ -46,7 +58,18 @@ public class SharedPrefManager {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString(KEY_EMAIL, "email@ejemplo.com");
     }
-    
+
+    // Devuelve los roles guardados (vacio si no hay sesion)
+    public Set<String> obtenerRoles() {
+        SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        return sharedPreferences.getStringSet(KEY_ROLES, new HashSet<>());
+    }
+
+    // true si el usuario logueado es administrador
+    public boolean esAdmin() {
+        return obtenerRoles().contains("ROLE_ADMIN");
+    }
+
     public void clear() {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();

@@ -42,6 +42,11 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.google.code.gson:gson:2.10.1")
 
+    // Mapa de OpenStreetMap (pantalla Ubicacion), sin clave de API
+    implementation("org.osmdroid:osmdroid-android:6.1.20")
+    // Cargar fotos desde una URL (Galeria y, mas adelante, productos)
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)

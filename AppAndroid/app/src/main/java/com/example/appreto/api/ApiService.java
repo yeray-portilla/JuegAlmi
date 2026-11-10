@@ -5,7 +5,9 @@ import com.example.appreto.models.LoginResponse;
 import com.example.appreto.models.OpcionCombo;
 import com.example.appreto.models.Operacion;
 import com.example.appreto.models.Product;
+import com.example.appreto.models.SolicitudAdmin;
 import com.example.appreto.models.Tienda;
+import com.example.appreto.models.User;
 import com.google.gson.JsonObject;
 import java.util.List;
 import okhttp3.MultipartBody;
@@ -35,8 +37,9 @@ public interface ApiService {
     @POST("auth/login")
     Call<LoginResponse> login(@Body JsonObject body);
 
+    // Devuelve el usuario creado (201), SIN token: despues hay que hacer login
     @POST("auth/register")
-    Call<LoginResponse> register(@Body JsonObject body);
+    Call<User> register(@Body JsonObject body);
 
     // =====================================================================
     // 2. CATÁLOGO
@@ -93,9 +96,6 @@ public interface ApiService {
             @Part MultipartBody.Part foto
     );
 
-    @PUT("soporte/solicitudes/{id}")
-    Call<JsonObject> editarSolicitud(@Path("id") int id, @Body JsonObject body);
-
     @DELETE("soporte/solicitudes/{id}")
     Call<Void> cancelarSolicitud(@Path("id") int id);
 
@@ -104,7 +104,7 @@ public interface ApiService {
     // =====================================================================
 
     @GET("admin/solicitudes")
-    Call<List<JsonObject>> getSolicitudesAdmin(@Query("estado") String estado);
+    Call<List<SolicitudAdmin>> getSolicitudesAdmin(@Query("estado") String estado); // estado = pendiente, aceptada o rechazada
 
     @PUT("admin/solicitudes/{id}/aceptar")
     Call<JsonObject> aceptarSolicitudAdmin(@Path("id") int id, @Body JsonObject body);

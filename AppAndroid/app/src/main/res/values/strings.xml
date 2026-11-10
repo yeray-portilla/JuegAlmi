@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AppReto</string>
+    <string name="app_name">JuegAlmi</string>
 
     <!-- Login -->
     <string name="login_title">Hola de nuevo</string>
@@ -8,6 +8,25 @@
     <string name="password_hint">Contraseña</string>
     <string name="btn_login">Entrar</string>
     <string name="btn_register">Crear cuenta</string>
+    <string name="login_ir_registro">¿No tienes cuenta? Crear cuenta</string>
+    <string name="login_entrando">Entrando...</string>
+
+    <!-- Registro -->
+    <string name="registro_title">Crea tu cuenta</string>
+    <string name="registro_subtitle">Regístrate para comprar, alquilar y pedir reparaciones en JuegAlmi.</string>
+    <string name="registro_nombre_hint">Nombre de usuario</string>
+    <string name="registro_email_hint">Correo</string>
+    <string name="registro_password_ayuda">Mínimo 6 caracteres</string>
+    <string name="registro_repetir_hint">Repite la contraseña</string>
+    <string name="registro_creando">Creando cuenta...</string>
+    <string name="registro_ir_login">¿Ya tienes cuenta? Inicia sesión</string>
+
+    <!-- Tiendas (Historia, Ubicacion, Galeria) -->
+    <string name="tiendas_recargar">Recargar</string>
+    <string name="tiendas_reintentar">Reintentar</string>
+    <string name="tiendas_como_llegar">Cómo llegar</string>
+    <string name="atribucion_mapa">Tiles © Esri</string>
+    <string name="obteniendo_ubicacion">Obteniendo ubicación…</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_header_name">Nombre de usuario</string>
@@ -17,11 +36,13 @@
     <string name="nav_gallery">Galería</string>
     <string name="nav_history">Historia</string>
     <string name="nav_operations">Mis operaciones</string>
+    <string name="nav_admin">Administración</string>
     <string name="nav_logout">Cerrar sesión</string>
 
     <!-- Bottom Nav -->
     <string name="bottom_nav_devices">Dispositivos</string>
     <string name="bottom_nav_videogames">Videojuegos</string>
+    <string name="bottom_nav_consoles">Consolas</string>
     <string name="bottom_nav_support">Soporte</string>
 
     <!-- Support -->

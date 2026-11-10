@@ -1,0 +1,49 @@
+<ion-menu contentId="main">
+  <ion-content>
+    <div class="menu-head">
+      <strong>{{ auth.usuario()?.nombre_usuario }}</strong>
+      <span>{{ auth.usuario()?.email }}</span>
+    </div>
+    <ion-list lines="none">
+      @for (o of opciones; track o) {
+        <ion-menu-toggle auto-hide="false">
+          <ion-item button detail="false" (click)="abrir(o)">{{ o }}</ion-item>
+        </ion-menu-toggle>
+      }
+      <!-- Solo lo ve el administrador -->
+      @if (auth.esAdmin()) {
+        <ion-menu-toggle auto-hide="false">
+          <ion-item button detail="false" (click)="abrir('Administración')">Administración</ion-item>
+        </ion-menu-toggle>
+      }
+      <ion-menu-toggle auto-hide="false">
+        <ion-item button detail="false" (click)="salir()">Cerrar sesión</ion-item>
+      </ion-menu-toggle>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+
+
+<div class="ion-page" id="main">
+  <ion-tabs>
+    <ion-tab-bar slot="bottom">
+      <ion-tab-button tab="moviles">
+        <ion-icon name="phone-portrait-outline"></ion-icon>
+        <ion-label>Dispositivos</ion-label>
+      </ion-tab-button>
+      <ion-tab-button tab="consolas">
+  <ion-icon name="tv-outline"></ion-icon>
+  <ion-label>Consolas</ion-label>
+</ion-tab-button>
+      <ion-tab-button tab="videojuegos">
+        <ion-icon name="game-controller-outline"></ion-icon>
+        <ion-label>Videojuegos</ion-label>
+      </ion-tab-button>
+      <ion-tab-button tab="soporte">
+        <ion-icon name="construct-outline"></ion-icon>
+        <ion-label>Soporte</ion-label>
+      </ion-tab-button>
+    </ion-tab-bar>
+  </ion-tabs>
+</div>

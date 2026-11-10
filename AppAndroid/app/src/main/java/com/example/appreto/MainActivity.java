@@ -11,10 +11,16 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import com.example.appreto.api.LocationHelper;
 import com.example.appreto.api.SharedPrefManager;
+import com.example.appreto.fragments.AdminFragment;
+import com.example.appreto.fragments.GaleriaFragment;
+import com.example.appreto.fragments.HistoriaFragment;
 import com.example.appreto.fragments.LoginFragment;
+import com.example.appreto.fragments.UbicacionFragment;
 import com.example.appreto.fragments.MisOperacionesFragment;
 import com.example.appreto.fragments.MobilesFragment;
+import com.example.appreto.fragments.RegistroFragment;
 import com.example.appreto.fragments.SupportFragment;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -44,14 +50,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(item -> {
             drawerLayout.closeDrawer(GravityCompat.START);
-            int id = item.getItemId();
-            if (id == R.id.nav_logout) {
-                SharedPrefManager.getInstance(this).clear();
-                showLogin();
-            } else if (id == R.id.nav_operations) {
-                toolbar.setTitle(R.string.nav_operations);
-                loadFragment(new MisOperacionesFragment());
-            }
+            abrirOpcionMenuLateral(item.getItemId());
             return true;
         });
 
@@ -59,15 +58,15 @@ public class MainActivity extends AppCompatActivity {
             int id = item.getItemId();
             if (id == R.id.nav_devices) {
                 toolbar.setTitle(R.string.bottom_nav_devices);
-                loadFragment(new MobilesFragment("Dispositivos"));
+                loadFragment(MobilesFragment.nuevaInstancia(MobilesFragment.DISPOSITIVOS));
                 return true;
             } else if (id == R.id.nav_videogames) {
                 toolbar.setTitle(R.string.bottom_nav_videogames);
-                loadFragment(new MobilesFragment("Videojuegos"));
+                loadFragment(MobilesFragment.nuevaInstancia(MobilesFragment.VIDEOJUEGOS));
                 return true;
             } else if (id == R.id.nav_consoles) {
-                toolbar.setTitle(R.string.tab_consoles);
-                loadFragment(new MobilesFragment("Consolas"));
+                toolbar.setTitle(R.string.bottom_nav_consoles);
+                loadFragment(MobilesFragment.nuevaInstancia(MobilesFragment.CONSOLAS));
                 return true;
             } else if (id == R.id.nav_support) {
                 toolbar.setTitle(R.string.bottom_nav_support);
@@ -87,12 +86,68 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Abre la pantalla de la opcion elegida en el menu lateral
+    private void abrirOpcionMenuLateral(int idOpcion) {
+        if (idOpcion == R.id.nav_services) {
+            // Servicios = el catalogo (primera pestana de la barra de abajo)
+            bottomNav.setSelectedItemId(R.id.nav_devices);
+        } else if (idOpcion == R.id.nav_location) {
+            toolbar.setTitle(R.string.nav_location);
+            loadFragment(new UbicacionFragment());
+        } else if (idOpcion == R.id.nav_gallery) {
+            toolbar.setTitle(R.string.nav_gallery);
+            loadFragment(new GaleriaFragment());
+        } else if (idOpcion == R.id.nav_history) {
+            toolbar.setTitle(R.string.nav_history);
+            loadFragment(new HistoriaFragment());
+        } else if (idOpcion == R.id.nav_operations) {
+            toolbar.setTitle(R.string.nav_operations);
+            loadFragment(new MisOperacionesFragment());
+        } else if (idOpcion == R.id.nav_admin) {
+            // Doble seguridad: la opcion solo se ve si es admin, y la API devuelve 403 si no lo es
+            if (SharedPrefManager.getInstance(this).esAdmin()) {
+                toolbar.setTitle(R.string.nav_admin);
+                loadFragment(new AdminFragment());
+            }
+        } else if (idOpcion == R.id.nav_logout) {
+            SharedPrefManager.getInstance(this).clear();
+            showLogin();
+        }
+    }
+
+    // Abre Mis operaciones directamente en la pestana "Mis solicitudes" (lo usa Soporte al enviar una solicitud)
+    public void abrirMisSolicitudes() {
+        toolbar.setTitle(R.string.nav_operations);
+        loadFragment(MisOperacionesFragment.nuevaInstancia(MisOperacionesFragment.PESTANA_SOLICITUDES));
+    }
+
+    // Respuesta del usuario al permiso de ubicacion: LocationHelper continua con la accion que estaba esperando
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        LocationHelper.alRecibirRespuestaPermiso(requestCode);
+    }
+
     private void showLogin() {
         appBarLayout.setVisibility(View.GONE);
         bottomNav.setVisibility(View.GONE);
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         loadFragment(new LoginFragment());
+    }
+
+    // Lo usa RegistroFragment para volver al login
+    public void mostrarLogin() {
+        showLogin();
+    }
+
+    // Pantalla de registro: igual que el login, sin barras ni menu lateral
+    public void mostrarRegistro() {
+        appBarLayout.setVisibility(View.GONE);
+        bottomNav.setVisibility(View.GONE);
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+        loadFragment(new RegistroFragment());
     }
 
     public void onLoginSuccess() {
@@ -112,7 +167,15 @@ public class MainActivity extends AppCompatActivity {
         navUsername.setText(username);
         navEmail.setText(email);
 
+        mostrarOpcionAdminSiEsAdmin(navigationView);
+
         bottomNav.setSelectedItemId(R.id.nav_devices);
+    }
+
+    // La opcion "Administracion" del menu lateral solo se ve si el usuario tiene ROLE_ADMIN
+    private void mostrarOpcionAdminSiEsAdmin(NavigationView navigationView) {
+        boolean esAdmin = SharedPrefManager.getInstance(this).esAdmin();
+        navigationView.getMenu().findItem(R.id.nav_admin).setVisible(esAdmin);
     }
 
     private void loadFragment(Fragment fragment) {

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pantalla de registro: mismo diseno que fragment_login.xml. ScrollView para que quepa con el teclado abierto. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_dark"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/registro_title"
+            android:textColor="@color/text_primary"
+            android:textSize="34sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/registro_subtitle"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="32dp"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_nombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextInputStyle"
+            android:hint="@string/registro_nombre_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_nombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_primary"
+                android:maxLength="180"
+                android:autofillHints="username"
+                android:inputType="text"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextInputStyle"
+            android:layout_marginTop="16dp"
+            android:hint="@string/registro_email_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_primary"
+                android:autofillHints="emailAddress"
+                android:inputType="textEmailAddress"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextInputStyle"
+            android:layout_marginTop="16dp"
+            android:hint="@string/password_hint"
+            app:helperText="@string/registro_password_ayuda"
+            app:helperTextTextColor="@color/text_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_primary"
+                android:autofillHints="password"
+                android:inputType="textPassword"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_repetir"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TextInputStyle"
+            android:layout_marginTop="16dp"
+            android:hint="@string/registro_repetir_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_repetir"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_primary"
+                android:autofillHints="password"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_crear_cuenta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/btn_register"
+            android:textColor="@color/background_dark"
+            android:backgroundTint="@color/primary"
+            app:cornerRadius="12dp"
+            android:paddingVertical="12dp"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_ir_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/registro_ir_login"
+            android:textColor="#FF8A6B"
+            app:backgroundTint="@color/transparent"
+            app:rippleColor="#40FF8A6B"
+            app:elevation="0dp"
+            android:paddingVertical="12dp"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+</ScrollView>

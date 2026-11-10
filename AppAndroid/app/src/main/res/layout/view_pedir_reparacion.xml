@@ -1,17 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Soporte -> pestana "Pedir reparacion": formulario de la solicitud -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_aviso_aparatos"
+    <!-- Si el usuario aun no tiene aparatos: aviso y boton para ir a "Mis aparatos" -->
+    <LinearLayout
+        android:id="@+id/ll_aviso_aparatos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Primero registra tu aparato en 'Mis aparatos'."
-        android:textColor="@color/text_secondary"
-        android:visibility="gone"/>
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingVertical="48dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Primero registra tu aparato en &quot;Mis aparatos&quot;."
+            android:textColor="@color/text_secondary"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_ir_mis_aparatos"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Ir a Mis aparatos"
+            android:textColor="#FF8A6B"
+            app:strokeColor="@color/primary"
+            app:cornerRadius="12dp"
+            android:textAllCaps="false"
+            android:textStyle="bold"/>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/ll_formulario_pedir"
@@ -19,41 +43,65 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <TextView
+            style="@style/EtiquetaCampo"
+            android:text="Aparato"/>
+
         <Spinner
             android:id="@+id/spinner_aparatos_pedir"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="48dp"
             android:layout_marginBottom="16dp"/>
 
+        <TextView
+            style="@style/EtiquetaCampo"
+            android:text="Tienda"/>
+
+        <!-- Solo salen las tiendas que reparan el tipo del aparato elegido -->
         <Spinner
             android:id="@+id/spinner_tiendas"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:layout_marginBottom="16dp"/>
+            android:layout_height="wrap_content"/>
 
+        <TextView
+            android:id="@+id/tv_sin_tiendas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Ninguna tienda repara este tipo de aparato."
+            android:textColor="@color/estado_rechazada"
+            android:textSize="13sp"
+            android:visibility="gone"/>
+
+        <!-- Descripcion: maximo 255 caracteres (limite de la API), con contador -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             style="@style/TextInputStyle"
-            android:hint="Descripción del problema">
+            android:hint="Descripción del problema"
+            app:placeholderText="Ej.: la pantalla no enciende"
+            app:counterEnabled="true"
+            app:counterMaxLength="255"
+            app:counterTextColor="@color/text_hint">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_descripcion_problema"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="110dp"
                 android:gravity="top|start"
                 android:textColor="@color/text_primary"
-                android:inputType="textMultiLine"/>
+                android:maxLength="255"
+                android:inputType="textMultiLine|textCapSentences"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <ImageView
             android:id="@+id/iv_foto_previa"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="220dp"
             android:layout_marginTop="16dp"
             android:scaleType="centerInside"
             android:background="@color/surface_image_bg"
+            android:contentDescription="Foto del aparato"
             android:visibility="gone"/>
 
         <com.google.android.material.button.MaterialButton
@@ -63,7 +111,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="Quitar foto"
-            android:textColor="@color/text_primary"
+            android:textColor="#FF8A6B"
+            android:textAllCaps="false"
             android:visibility="gone"/>
 
         <com.google.android.material.button.MaterialButton
@@ -78,6 +127,7 @@
             app:icon="@drawable/ic_camera"
             app:iconTint="#FF8A6B"
             app:iconGravity="textStart"
+            app:cornerRadius="12dp"
             android:textAllCaps="false"/>
 
         <com.google.android.material.button.MaterialButton
@@ -88,6 +138,7 @@
             android:text="Enviar solicitud"
             android:textColor="@color/background_dark"
             android:backgroundTint="@color/primary"
+            app:cornerRadius="12dp"
             android:textAllCaps="false"
             android:textStyle="bold"/>
     </LinearLayout>

@@ -1,0 +1,227 @@
+@use 'sass:color';
+
+// Colores base del tema (mismos que la app Android)
+$fondo: #0A0F22;          // fondo de las pantallas
+$fondo-ventana: #131A33;  // fondo de alertas, desplegables, popovers, action sheets y modales
+$texto: #FFFFFF;          // texto principal
+$texto-2: #C9D1EA;        // texto secundario (gris claro)
+$ambar: #FFC53D;          // botones de las ventanas y opcion seleccionada
+
+:root {
+  color-scheme: dark;
+  --ion-font-family: 'Roboto', sans-serif;
+  --ion-background-color: #{$fondo};
+  --ion-background-color-rgb: 10, 15, 34;
+  --ion-text-color: #{$texto};
+  --ion-text-color-rgb: 255, 255, 255;
+  --ion-overlay-background-color: #{$fondo-ventana};
+  --ion-item-background: transparent;
+  --ion-border-color: rgba(255, 255, 255, 0.14);
+  --ion-placeholder-color: #8F9BC4;
+
+  // Ionic 8 pinta los grises con estas "escalas" (step-50 ... step-950). Si no se definen,
+  // usa los del tema CLARO (#4d4d4d, #262626...) y el texto queda casi invisible sobre fondo oscuro.
+  //   text-color-step-N:       el texto mezclado un N/1000 hacia el fondo (cuanto mas N, mas apagado)
+  //   background-color-step-N: el fondo mezclado un N/1000 hacia el texto (cuanto mas N, mas claro)
+  @for $i from 1 through 19 {
+    --ion-text-color-step-#{$i * 50}: #{color.mix($fondo, $texto, $i * 5%)};
+    --ion-background-color-step-#{$i * 50}: #{color.mix($texto, $fondo, $i * 5%)};
+  }
+
+  --ion-color-primary: #FF5A36;
+  --ion-color-primary-rgb: 255, 90, 54;
+  --ion-color-primary-contrast: #12182B;
+  --ion-color-primary-contrast-rgb: 18, 24, 43;
+  --ion-color-primary-shade: #E04F2F;
+  --ion-color-primary-tint: #FF6A49;
+
+  --ion-toolbar-background: #{$fondo};
+  --ion-toolbar-color: #F2F5FF;
+  --ion-tab-bar-background: #{$fondo};
+  --ion-tab-bar-color: #8F9BC4;
+  --ion-tab-bar-color-selected: #{$ambar};
+}
+
+ion-content { --background: linear-gradient(180deg, #121B3D 0%, #0A0F22 60%); }
+ion-menu-button { --color: #F2F5FF; }
+ion-tab-bar { border-top: 1px solid rgba(255, 255, 255, 0.08); }
+
+ion-button { --border-radius: 12px; text-transform: none; font-weight: 700; }
+ion-button[fill='clear'] { --color: #FF8A6B; }
+
+ion-segment { --background: #151E3A; margin-bottom: 20px; border-radius: 12px; }
+ion-segment-button { --color: #A9B4D6; --color-checked: #FFC53D; --indicator-color: #FF5A36; }
+
+ion-textarea, ion-input, ion-select {
+  --color: #F2F5FF;
+  --placeholder-color: #8F9BC4;
+  --placeholder-opacity: 1; // Ionic lo pone al 0.6 y, con #8F9BC4 sobre azul oscuro, casi no se lee
+  --border-color: rgba(255, 255, 255, 0.35);
+  --highlight-color-focused: #FFC53D;
+  margin-bottom: 16px;
+}
+
+.titulo { font-size: 30px; font-weight: 700; margin: 0 0 12px; color: #F2F5FF; }
+.muted { color: #A9B4D6; font-size: 14px; strong { color: #FFC53D; font-size: 17px; } }
+.err { color: #FF9B8A; font-size: 13px; font-weight: 500; }
+
+.login { min-height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 8px;
+  h1 { margin: 0; font-size: 34px; font-weight: 700; color: #F2F5FF; } }
+
+.filtros { display: flex; gap: 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.12); margin-bottom: 16px;
+  button { background: none; border: 0; padding: 8px 0 10px; font-size: 15px; color: #A9B4D6; border-bottom: 3px solid transparent;
+    &.on { color: #F2F5FF; font-weight: 700; border-color: #FF5A36; } } }
+
+.prod { display: flex; gap: 12px; background: #151E3A; color: #F2F5FF; border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px; padding: 12px; margin-bottom: 14px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  img { width: 88px; height: 88px; object-fit: contain; border-radius: 10px; background: #1F2A4D; }
+  .info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  strong { color: #F2F5FF; }
+  .muted { color: #A9B4D6; }
+  .precio { color: #FFC53D; font-weight: 700; font-size: 18px; }
+  .botones { display: flex; gap: 8px; }
+  ion-button { --color: #FF8A6B; --border-color: #FF5A36; }
+  ion-button:not([fill='outline']) { --background: #FF5A36; --color: #12182B; } }
+
+.menu-head { padding: 56px 24px 16px; display: flex; flex-direction: column; background: #151E3A;
+  border-bottom: 3px solid #FF5A36; margin-bottom: 8px;
+  strong { font-size: 18px; color: #F2F5FF; } span { color: #A9B4D6; font-size: 14px; } }
+ion-menu ion-content { --background: #0A0F22; }
+ion-menu ion-item { --background: transparent; --color: #F2F5FF; --border-radius: 12px; margin: 0 8px; }
+// Spinner / mensaje de error / lista vacia, centrados
+.estado { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 0; text-align: center;
+  ion-spinner { color: #FF5A36; width: 40px; height: 40px; } }
+
+// Animacion sencilla: las tarjetas aparecen subiendo un poco
+.prod { animation: aparecer 0.35s ease-out both; }
+@keyframes aparecer { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+// Ventana de fechas del alquiler
+.fechas { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
+.modal-fechas { --height: 420px; --border-radius: 16px; }
+
+// Estado de una operacion (Mis operaciones)
+.estado-op { font-weight: 600; text-transform: capitalize;
+  &.activo, &.completada { color: #7BE495; } &.pendiente { color: #FFC53D; } &.finalizado { color: #A9B4D6; } }
+
+
+// Soporte: formularios y foto
+.formulario { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
+.subtitulo { font-size: 20px; font-weight: 700; color: #F2F5FF; margin: 16px 0 0; }
+.foto-previa { display: flex; flex-direction: column; align-items: center; gap: 4px;
+  img { max-width: 100%; max-height: 220px; border-radius: 12px; object-fit: contain; background: #1F2A4D; } }
+.estado-op { &.rechazada { color: #FF9B8A; } &.en_proceso { color: #FFC53D; } }
+.estado-op.texto { text-transform: none; } // en Soporte el texto ya viene bien escrito
+
+// Administracion
+.solicitud { .descripcion { color: #F2F5FF; font-size: 14px; }
+  a { color: #FFC53D; } }
+
+// Tiendas
+.tienda { .cabecera { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .distancia { color: #FFC53D; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .historia { color: #F2F5FF; font-size: 14px; line-height: 1.5; margin: 8px 0 0; }
+  .botones { margin-top: 8px; }
+  .mapa { height: 180px; border-radius: 12px; margin-top: 8px; z-index: 0; background: #1F2A4D; }
+  // Galeria con desplazamiento horizontal
+  .galeria { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; margin-top: 8px; padding-bottom: 6px;
+    img { flex: 0 0 auto; width: 220px; height: 150px; object-fit: cover; scroll-snap-align: start; } } }
+
+// =====================================================================
+// VENTANAS EMERGENTES (alert, select, popover, action sheet, modal, loading)
+// Van aqui, globales: Ionic las pinta fuera de la pagina, al final del <body>.
+// =====================================================================
+
+// Dentro de las ventanas emergentes, el color "primary" pasa a ser el ambar:
+// asi botones, radio marcado y casillas salen en ambar sin pelearse con el CSS de Ionic.
+@mixin primario-ambar {
+  --ion-color-primary: #{$ambar};
+  --ion-color-primary-rgb: 255, 197, 61;
+  --ion-color-primary-contrast: #{$fondo-ventana};
+  --ion-color-primary-contrast-rgb: 19, 26, 51;
+  --ion-color-primary-shade: #E0AD36;
+  --ion-color-primary-tint: #FFCB50;
+}
+
+// --- ion-alert (y el desplegable ion-select, que en modo md es una alerta) ---
+// Los selectores llevan .sc-ion-alert-md porque Ionic usa esa clase y si no, ganan sus reglas.
+ion-alert {
+  @include primario-ambar;
+  --background: #{$fondo-ventana};
+  --max-width: 340px;
+
+  .alert-title.sc-ion-alert-md { color: #{$texto}; }
+  .alert-sub-title.sc-ion-alert-md, .alert-message.sc-ion-alert-md { color: #{$texto-2}; }
+  .alert-button.sc-ion-alert-md { color: #{$ambar}; font-weight: 700; }
+
+  // Opciones del desplegable (radio) y de las casillas (checkbox)
+  .alert-radio-label.sc-ion-alert-md, .alert-checkbox-label.sc-ion-alert-md { color: #{$texto}; }
+  .alert-radio-group.sc-ion-alert-md, .alert-checkbox-group.sc-ion-alert-md { border-color: rgba(255, 255, 255, 0.14); }
+  .alert-radio-icon.sc-ion-alert-md, .alert-checkbox-icon.sc-ion-alert-md { border-color: #{$texto-2}; }
+  [aria-checked='true'].alert-tappable .alert-radio-label.sc-ion-alert-md,
+  [aria-checked='true'].alert-tappable .alert-checkbox-label.sc-ion-alert-md { color: #{$ambar}; font-weight: 600; }
+
+  // Campos de texto dentro de la alerta (precio, motivo...)
+  .alert-input.sc-ion-alert-md { color: #{$texto}; border-bottom-color: rgba(255, 255, 255, 0.35);
+    &::placeholder { color: #8F9BC4; opacity: 1; }
+    &:focus { border-bottom-color: #{$ambar}; } }
+  textarea.alert-input.sc-ion-alert-md { border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 8px; padding: 8px; }
+}
+
+// --- ion-popover (y ion-select con interface="popover") ---
+ion-popover {
+  @include primario-ambar;
+  --background: #{$fondo-ventana};
+  --color: #{$texto};
+  ion-list { background: transparent; }
+  ion-item { --color: #{$texto}; --background: transparent; }
+  ion-radio, ion-checkbox { --color-checked: #{$ambar}; }
+  .item-radio-checked, .select-interface-option.item-radio-checked { --color: #{$ambar}; }
+  ion-list-header, ion-note { color: #{$texto-2}; }
+}
+
+// --- ion-action-sheet ---
+// Ionic declara sus variables en la clase .sc-ion-action-sheet-md-h: hay que usarla para ganarle.
+ion-action-sheet.sc-ion-action-sheet-md-h {
+  @include primario-ambar;
+  --background: #{$fondo-ventana};
+  --color: #{$texto};
+  --button-color: #{$texto};
+  --button-background-selected: #{$ambar};
+  --button-background-selected-opacity: 0.12;
+  --button-color-selected: #{$ambar};
+  .action-sheet-title.sc-ion-action-sheet-md, .action-sheet-sub-title.sc-ion-action-sheet-md { color: #{$texto-2}; }
+  .action-sheet-selected.sc-ion-action-sheet-md { color: #{$ambar}; font-weight: 700; }
+  .action-sheet-cancel.sc-ion-action-sheet-md { color: #{$ambar}; font-weight: 700; }
+}
+
+// --- ion-modal (ventana de fechas del alquiler y de editar descripcion) ---
+ion-modal {
+  --background: #{$fondo-ventana};
+  --color: #{$texto};
+  // Los botones de la barra (p. ej. "Cerrar") cogen el color de la toolbar: ambar. El titulo va en blanco.
+  ion-toolbar { --background: #{$fondo-ventana}; --color: #{$ambar}; --ion-toolbar-color: #{$ambar}; }
+  ion-content { --background: #{$fondo-ventana}; }
+  ion-title { color: #{$texto}; }
+  .muted { color: #{$texto-2}; }
+}
+
+// --- ion-loading ("Obteniendo ubicación…") ---
+// (con .sc-ion-loading-md-h, que es donde Ionic declara sus variables)
+ion-loading.sc-ion-loading-md-h { --background: #{$fondo-ventana}; --spinner-color: #{$ambar}; color: #{$texto}; }
+ion-loading .loading-content.sc-ion-loading-md { color: #{$texto}; }
+
+// --- ion-toast: texto blanco/oscuro bien legible sobre cada color ---
+ion-toast { --border-radius: 12px; font-weight: 500; }
+
+// Elementos desactivados: Ionic los deja al 38-50 % de opacidad y sobre el fondo oscuro casi no se leen.
+// Al 60 % se nota que estan desactivados pero el texto se sigue leyendo.
+ion-select.select-disabled, ion-input.input-disabled, ion-textarea.textarea-disabled { opacity: 0.6; }
+ion-button.button-disabled { opacity: 0.6; }
+
+// Enlace "¿No tienes cuenta? Crear cuenta" / "¿Ya tienes cuenta? Inicia sesión" (login y registro)
+.enlace-cuenta { margin: 12px 0 0; text-align: center; color: #A9B4D6; font-size: 15px;
+  button { background: none; border: 0; padding: 4px 2px; font: inherit; font-weight: 700; color: #{$ambar}; cursor: pointer;
+    text-decoration: underline; text-underline-offset: 3px; } }
+.login .err { margin: -18px 0 8px 4px; } // el error, pegado debajo de su campo
+.login ion-input { --helper-text-color: #A9B4D6; } // texto de ayuda ("Mínimo 6 caracteres") legible

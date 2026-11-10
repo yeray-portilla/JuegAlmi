@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Soporte -> pestana "Mis aparatos": lista de aparatos del usuario y formulario para anadir uno -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <!-- Una tarjeta por aparato (item_aparato.xml) -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_aparatos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layoutAnimation="@anim/lista_aparecer"
         android:nestedScrollingEnabled="false" />
 
     <TextView
@@ -29,30 +33,41 @@
         android:layout_marginTop="24dp"
         android:layout_marginBottom="16dp"/>
 
+    <TextView
+        style="@style/EtiquetaCampo"
+        android:text="Marca"/>
+
     <Spinner
         android:id="@+id/spinner_marcas"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="48dp"
         android:layout_marginBottom="16dp"/>
+
+    <TextView
+        style="@style/EtiquetaCampo"
+        android:text="Tipo de aparato"/>
 
     <Spinner
         android:id="@+id/spinner_departamentos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="48dp"
         android:layout_marginBottom="16dp"/>
 
+    <!-- Modelo: maximo 100 caracteres (limite de la API), con contador -->
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/TextInputStyle"
-        android:hint="Modelo (Ej.: Galaxy S21)">
+        android:hint="Modelo (Ej.: Galaxy S21)"
+        app:counterEnabled="true"
+        app:counterMaxLength="100"
+        app:counterTextColor="@color/text_hint">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_modelo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/text_primary"
+            android:maxLength="100"
             android:inputType="text"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -64,6 +79,7 @@
         android:text="Guardar aparato"
         android:textColor="@color/background_dark"
         android:backgroundTint="@color/primary"
+        app:cornerRadius="12dp"
         android:textAllCaps="false"
         android:textStyle="bold"/>
 </LinearLayout>

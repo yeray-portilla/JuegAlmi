@@ -1,5 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.AppReto" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <!-- Tema de la app. Siempre oscuro (como la app Ionic, que usa color-scheme: dark):
+         asi los dialogos y desplegables del sistema no salen blancos con texto claro. -->
+    <style name="Theme.AppReto" parent="Theme.MaterialComponents.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="colorOnPrimary">@color/text_primary</item>
@@ -15,6 +17,14 @@
         <!-- BottomNavigationView -->
         <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>
         <item name="android:navigationBarColor">@color/surface_dark</item>
+
+        <!-- Todos los Spinner de la app usan este estilo (Soporte, administracion...) -->
+        <item name="spinnerStyle">@style/Widget.App.Spinner</item>
+        <item name="android:spinnerStyle">@style/Widget.App.Spinner</item>
+
+        <!-- Dialogos (AlertDialog) y selector de fecha (DatePickerDialog) -->
+        <item name="alertDialogTheme">@style/ThemeOverlay.App.Dialogo</item>
+        <item name="android:datePickerDialogTheme">@style/ThemeOverlay.App.DialogoFecha</item>
     </style>
 
     <style name="Widget.App.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
@@ -38,6 +48,53 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorOnSurface">@color/text_secondary</item>
         <item name="colorError">@color/primary</item>
+    </style>
+
+    <!-- Etiqueta pequena encima de un desplegable ("Marca", "Tienda"...), como label-placement="stacked" en Ionic -->
+    <style name="EtiquetaCampo">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:textColor">@color/text_hint</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <!-- Spinner (desplegable): recuadro con borde claro y flecha, y la lista que se abre con fondo de ventana -->
+    <style name="Widget.App.Spinner" parent="Widget.AppCompat.Spinner">
+        <item name="android:background">@drawable/spinner_fondo</item>
+        <item name="android:popupBackground">@drawable/spinner_lista_fondo</item>
+        <item name="android:minHeight">52dp</item>
+    </style>
+
+    <!-- Dialogos: fondo de ventana (#131A33), titulo blanco, mensaje gris claro y botones en ambar (igual que ion-alert) -->
+    <style name="ThemeOverlay.App.Dialogo" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/dialogo_fondo</item>
+        <item name="colorSurface">@color/fondo_ventana</item>
+        <item name="android:textColorPrimary">@color/texto_ventana</item>
+        <item name="android:textColorSecondary">@color/texto_ventana_secundario</item>
+        <item name="android:textColorAlertDialogListItem">@color/texto_ventana</item>
+        <item name="colorPrimary">@color/colorAccent</item>
+        <item name="colorOnSurface">@color/texto_ventana</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.BotonDialogo</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.App.BotonDialogo</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.BotonDialogo</item>
+    </style>
+
+    <!-- Botones de texto de los dialogos ("Aceptar", "Cancelar"...): ambar y en negrita -->
+    <style name="Widget.App.BotonDialogo" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <!-- Selector de fecha del alquiler: oscuro, con el dia elegido y los botones en ambar -->
+    <style name="ThemeOverlay.App.DialogoFecha" parent="ThemeOverlay.MaterialComponents.Dialog">
+        <item name="android:windowBackground">@drawable/dialogo_fondo</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/texto_ventana</item>
+        <item name="android:textColorSecondary">@color/texto_ventana_secundario</item>
+        <item name="android:colorBackground">@color/fondo_ventana</item>
     </style>
 
 </resources>

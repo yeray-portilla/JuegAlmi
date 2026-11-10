@@ -1,23 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Mis operaciones: titulo, recargar y tres pestanas (Compras, Alquileres, Mis solicitudes), como en Ionic.
+     Abajo, solo uno visible a la vez: cargando, error + reintentar, lista vacia o la lista. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_dark"
     android:orientation="vertical">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Mis operaciones"
-        android:textColor="@color/text_primary"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:padding="16dp"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/nav_operations"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp"
+            android:textStyle="bold"/>
+
+        <ImageButton
+            android:id="@+id/btn_recargar_operaciones"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/tiendas_recargar"
+            android:src="@drawable/ic_refresh"/>
+    </LinearLayout>
+
+    <!-- Mismo estilo de pestanas que en Soporte y Administracion -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_operaciones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/tab_background"
+        app:tabBackground="@drawable/tab_selector"
+        app:tabIndicatorHeight="0dp"
+        app:tabRippleColor="@null"
+        app:tabTextColor="@color/text_secondary"
+        app:tabSelectedTextColor="@color/price_yellow"
+        app:tabMode="fixed"
+        app:tabGravity="fill">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Compras"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alquileres"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mis solicitudes"/>
+    </com.google.android.material.tabs.TabLayout>
+
+    <!-- Estado "cargando" -->
+    <ProgressBar
+        android:id="@+id/pb_operaciones"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="48dp"
+        android:indeterminateTint="@color/primary"
+        android:visibility="gone"/>
+
+    <!-- Estado "error": mensaje y boton Reintentar -->
+    <LinearLayout
+        android:id="@+id/ll_error_operaciones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="48dp"
+        android:padding="16dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_error_operaciones"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/estado_rechazada"
+            android:textSize="14sp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_reintentar_operaciones"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/tiendas_reintentar"
+            android:textColor="@color/primary"
+            android:textAllCaps="false"
+            app:strokeColor="@color/primary"
+            app:cornerRadius="12dp"/>
+    </LinearLayout>
+
+    <!-- Lista vacia, ej. "Todavía no has comprado nada." -->
+    <TextView
+        android:id="@+id/tv_vacio_operaciones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:gravity="center"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_operaciones"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp"
-        android:clipToPadding="false"/>
+        android:paddingHorizontal="8dp"
+        android:paddingBottom="16dp"
+        android:clipToPadding="false"
+        android:layoutAnimation="@anim/lista_aparecer"
+        android:visibility="gone"/>
 </LinearLayout>

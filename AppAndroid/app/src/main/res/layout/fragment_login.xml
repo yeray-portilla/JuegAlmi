@@ -69,10 +69,11 @@
         android:textStyle="bold"/>
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_ir_registro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Crear cuenta"
+        android:text="@string/login_ir_registro"
         android:textColor="#FF8A6B"
         app:backgroundTint="@color/transparent"
         app:rippleColor="#40FF8A6B"

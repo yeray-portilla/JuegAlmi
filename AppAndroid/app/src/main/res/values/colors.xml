@@ -15,4 +15,15 @@
     <color name="price_yellow">#FFC53D</color>
     <color name="divider_color">#2A355A</color> <!-- Approx rgba(255, 255, 255, 0.08) over #151E3A -->
     <color name="transparent">#00000000</color>
+
+    <!-- Ventanas emergentes (dialogos y listas desplegables), iguales que en juegalmi.scss de Ionic -->
+    <color name="fondo_ventana">#131A33</color>
+    <color name="texto_ventana">#FFFFFF</color>
+    <color name="texto_ventana_secundario">#C9D1EA</color>
+    <!-- Colores de estado (como .estado-op y .err en Ionic) -->
+    <color name="estado_completada">#7BE495</color>
+    <color name="estado_rechazada">#FF9B8A</color>
+
+    <!-- Borde de los campos y desplegables: blanco al 35 % -->
+    <color name="borde_campo">#59FFFFFF</color>
 </resources>
