@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardBackgroundColor="@color/surface_dark"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="4dp"
+    app:strokeColor="@color/divider_color"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/iv_foto_solicitud"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_marginBottom="12dp"
+            android:background="@color/surface_image_bg"
+            android:contentDescription="Foto del aparato"
+            android:scaleType="centerCrop"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tv_aparato_solicitud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="Sony PlayStation 5"/>
+
+        <TextView
+            android:id="@+id/tv_tipo_tienda_solicitud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            tools:text="Consolas · JuegAlmi Centro"/>
+
+        <TextView
+            android:id="@+id/tv_cliente_solicitud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            tools:text="Cliente: ana · 2026-11-10"/>
+
+        <TextView
+            android:id="@+id/tv_descripcion_solicitud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            tools:text="La consola no enciende"/>
+
+        <TextView
+            android:id="@+id/tv_ubicacion_solicitud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            tools:text="Ubicación: 36.84, -2.46"/>
+
+        <TextView
+            android:id="@+id/tv_motivo_solicitud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/estado_rechazada"
+            android:textSize="13sp"
+            android:visibility="gone"
+            tools:text="Motivo: no hay recambios"/>
+
+        <TextView
+            android:id="@+id/tv_reparacion_solicitud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:visibility="gone"
+            tools:text="Reparación #3 · estimado 60.0 €"/>
+
+        <TextView
+            android:id="@+id/tv_completada_solicitud"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/estado_completada"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:text="Reparada · 55.0 €"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_aceptar_solicitud"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="Aceptar"
+                android:textColor="@color/background_dark"
+                android:backgroundTint="@color/primary"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:minHeight="0dp"
+                android:paddingVertical="8dp"
+                app:cornerRadius="12dp"
+                android:visibility="gone"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_rechazar_solicitud"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rechazar"
+                android:textColor="#FF8A6B"
+                app:strokeColor="@color/primary"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:minHeight="0dp"
+                android:paddingVertical="8dp"
+                app:cornerRadius="12dp"
+                android:visibility="gone"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_completar_solicitud"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Marcar completada"
+                android:textColor="@color/background_dark"
+                android:backgroundTint="@color/primary"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:minHeight="0dp"
+                android:paddingVertical="8dp"
+                app:cornerRadius="12dp"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

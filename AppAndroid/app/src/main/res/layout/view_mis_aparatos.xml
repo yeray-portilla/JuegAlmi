@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_aparatos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layoutAnimation="@anim/lista_aparecer"
+        android:nestedScrollingEnabled="false" />
+
+    <TextView
+        android:id="@+id/tv_no_aparatos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Todavía no has registrado ningún aparato."
+        android:textColor="@color/text_secondary"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Añadir aparato"
+        android:textColor="@color/text_primary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        style="@style/EtiquetaCampo"
+        android:text="Marca"/>
+
+    <Spinner
+        android:id="@+id/spinner_marcas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        style="@style/EtiquetaCampo"
+        android:text="Tipo de aparato"/>
+
+    <Spinner
+        android:id="@+id/spinner_departamentos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/TextInputStyle"
+        android:hint="Modelo (Ej.: Galaxy S21)"
+        app:counterEnabled="true"
+        app:counterMaxLength="100"
+        app:counterTextColor="@color/text_hint">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_modelo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:maxLength="100"
+            android:inputType="text"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_guardar_aparato"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Guardar aparato"
+        android:textColor="@color/background_dark"
+        android:backgroundTint="@color/primary"
+        app:cornerRadius="12dp"
+        android:textAllCaps="false"
+        android:textStyle="bold"/>
+</LinearLayout>
