@@ -25,10 +25,9 @@
     </div>
   } @else {
 
-    <!-- ===================== MIS APARATOS ===================== -->
     @if (vista() === 'aparatos') {
       @for (a of aparatos(); track a.id) {
-        <div class="prod">
+        <ion-card class="prod">
           <div class="info">
             <strong>{{ a.marca }} {{ a.modelo }}</strong>
             <span class="muted">{{ a.departamento }}</span>
@@ -36,7 +35,7 @@
               <ion-button size="small" fill="outline" (click)="repararAparato(a)">Pedir reparación</ion-button>
             </div>
           </div>
-        </div>
+        </ion-card>
       } @empty {
         <p class="muted">Todavía no has registrado ningún aparato.</p>
       }
@@ -61,7 +60,6 @@
       </div>
     }
 
-    <!-- ===================== PEDIR REPARACION ===================== -->
     @if (vista() === 'pedir') {
       @if (aparatos().length === 0) {
         <div class="estado">

@@ -26,9 +26,9 @@
     </div>
   } @else {
     @for (s of datos(); track s.id) {
-      <div class="prod solicitud">
+      <ion-card class="prod solicitud">
         @if (s.url_foto) {
-          <img [src]="api.urlFoto(s.url_foto)" [alt]="s.dispositivo" (error)="api.fotoRota($event)" loading="lazy">
+          <ion-img [src]="api.urlFoto(s.url_foto)" [alt]="s.dispositivo" (ionError)="api.fotoRota($event)"></ion-img>
         }
         <div class="info">
           <strong>{{ s.dispositivo }}</strong>
@@ -48,7 +48,6 @@
             <span class="err">Motivo: {{ s.motivo_rechazo }}</span>
           }
 
-          <!-- Pendiente: aceptar con precio estimado o rechazar con motivo -->
           @if (s.estado === 'pendiente') {
             <div class="botones">
               <ion-button size="small" [disabled]="enviando() !== null" (click)="aceptar(s)">Aceptar</ion-button>
@@ -56,7 +55,6 @@
             </div>
           }
 
-          <!-- Aceptada: la reparacion se puede marcar como completada con el precio final -->
           @if (s.estado === 'aceptada' && s.reparacion_id !== null) {
             <span class="muted">
               Reparación #{{ s.reparacion_id }}
@@ -75,7 +73,7 @@
             }
           }
         </div>
-      </div>
+      </ion-card>
     } @empty {
       <div class="estado"><span class="muted">No hay solicitudes {{ filtro() }}s.</span></div>
     }

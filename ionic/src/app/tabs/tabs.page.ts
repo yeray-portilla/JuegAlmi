@@ -21,7 +21,6 @@ export class TabsPage {
     addIcons({ phonePortraitOutline, gameControllerOutline, constructOutline, tvOutline });
   }
 
-// Opciones del menu lateral. Ubicación, Galería e Historia tienen cada una su pagina.
 abrir(opcion: string) {
   if (opcion === 'Servicios') {
     this.router.navigateByUrl('/tabs');

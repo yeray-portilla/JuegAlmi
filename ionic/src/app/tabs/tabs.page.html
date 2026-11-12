@@ -10,7 +10,6 @@
           <ion-item button detail="false" (click)="abrir(o)">{{ o }}</ion-item>
         </ion-menu-toggle>
       }
-      <!-- Solo lo ve el administrador -->
       @if (auth.esAdmin()) {
         <ion-menu-toggle auto-hide="false">
           <ion-item button detail="false" (click)="abrir('Administración')">Administración</ion-item>

@@ -20,16 +20,16 @@
     </div>
   } @else {
     @for (t of tiendas.datos(); track t.id) {
-      <div class="tienda">
+      <ion-card class="tienda">
         <strong>{{ t.nombre }}</strong>
         <div class="galeria">
           @for (foto of t.fotos; track foto) {
-            <img [src]="api.urlFoto(foto)" [alt]="t.nombre" (error)="api.fotoRota($event)" loading="lazy">
+            <ion-img [src]="api.urlFoto(foto)" [alt]="t.nombre" (ionError)="api.fotoRota($event)"></ion-img>
           } @empty {
             <span class="muted">No hay fotos de esta tienda.</span>
           }
         </div>
-      </div>
+      </ion-card>
     } @empty {
       <div class="estado"><span class="muted">No hay tiendas.</span></div>
     }

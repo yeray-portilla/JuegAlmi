@@ -20,25 +20,24 @@
     </div>
   } @else {
     @for (v of datos(); track v.id) {
-      <div class="prod">
-        <img [src]="api.urlFoto(v.foto_url)" [alt]="v.nombre" (error)="api.fotoRota($event)" loading="lazy">
+      <ion-card class="prod">
+        <ion-img [src]="api.urlFoto(v.foto_url)" [alt]="v.nombre" (ionError)="api.fotoRota($event)"></ion-img>
         <div class="info">
           <strong>{{ v.nombre }}</strong>
           <span class="muted">{{ v.marca }}</span>
           <span class="precio">{{ v.precio }} € · alquiler {{ v.precio_diario }} €/día</span>
           <div class="botones">
-            <ion-button size="small" [disabled]="v.stock === 0 || enviando()" (click)="comprar(v)">Comprar</ion-button>
+            <ion-button fill="solid" color="primary" [disabled]="v.stock === 0 || enviando()" (click)="comprar(v)">Comprar</ion-button>
             <ion-button size="small" fill="outline" [disabled]="v.copias_alquiler === 0 || enviando()"
                         (click)="abrirAlquiler(v)">Alquilar</ion-button>
           </div>
         </div>
-      </div>
+      </ion-card>
     } @empty {
       <div class="estado"><span class="muted">No hay videojuegos.</span></div>
     }
   }
 
-  <!-- Ventana para elegir las fechas del alquiler -->
   <ion-modal [isOpen]="juegoAlquiler() !== null" (didDismiss)="cerrarAlquiler()" class="modal-fechas">
     <ng-template>
       <ion-header class="ion-no-border">

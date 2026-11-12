@@ -20,14 +20,14 @@
     </div>
   } @else {
     @for (t of tiendas.datos(); track t.id) {
-      <div class="tienda">
+      <ion-card class="tienda">
         <strong>{{ t.nombre }}</strong>
         <span class="muted"><ion-icon name="location-outline"></ion-icon> {{ t.direccion }}</span>
         @if (tiendas.nombresDepartamentos(t)) {
           <span class="muted">Departamentos: {{ tiendas.nombresDepartamentos(t) }}</span>
         }
         <p class="historia">{{ t.historia || 'Esta tienda todavía no tiene historia.' }}</p>
-      </div>
+      </ion-card>
     } @empty {
       <div class="estado"><span class="muted">No hay tiendas.</span></div>
     }

@@ -44,7 +44,7 @@ Camara (Capacitor Camera), GPS (Capacitor Geolocation), carga asincrona con spin
 2. Login real: usar api.service, guardar token+roles, `authGuard` que redirige a /login sin token, cerrar sesion, tratar el 401 en el interceptor.
 3. Que Videojuegos y Moviles lean de la API (spinner mientras carga, mensaje si falla) en vez de datos fijos.
 4. Pagina Consolas (ruta, pestana y lista desde /productos/consolas), con el mismo estilo que Moviles.
-5. Soporte: "Mis aparatos" (listar + anadir con desplegable de marcas y departamentos) y "Pedir reparacion" (elegir aparato, tienda que ofrezca ese departamento, descripcion, foto con camara, GPS) y "Mis solicitudes" (editar descripcion / cancelar si estan pendientes).
+5. Soporte: "Mis aparatos" (listar + anadir con desplegable de marcas y departamentos) y "Pedir reparacion" (elegir aparato, tienda que ofrezca ese departamento, descripcion, foto con camara, GPS) y "Mis solicitudes" (esta en Mis operaciones, pestana "Mis solicitudes": las solicitudes NO se editan, solo se cancelan si estan pendientes).
 6. Pantalla admin (solo si roles incluye ROLE_ADMIN): lista de solicitudes con filtro por estado, aceptar con precio, rechazar con motivo, y marcar reparacion completada con precio final.
 
 

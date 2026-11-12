@@ -1,18 +1,17 @@
 import { Component } from '@angular/core';
 import {
-  IonHeader, IonToolbar, IonButtons, IonBackButton, IonContent, IonButton, IonSpinner,
+  IonHeader, IonToolbar, IonButtons, IonBackButton, IonContent, IonButton, IonSpinner, IonCard,
   IonRefresher, IonRefresherContent, IonIcon,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { locationOutline } from 'ionicons/icons';
 import { TiendasService } from '../tiendas.service';
 
-// Historia de cada tienda (nombre, direccion, departamentos y su historia)
 @Component({
   standalone: true,
   selector: 'app-historia',
   templateUrl: './historia.page.html',
-  imports: [IonHeader, IonToolbar, IonButtons, IonBackButton, IonContent, IonButton, IonSpinner,
+  imports: [IonHeader, IonToolbar, IonButtons, IonBackButton, IonContent, IonButton, IonSpinner, IonCard,
     IonRefresher, IonRefresherContent, IonIcon],
 })
 export class HistoriaPage {
@@ -20,7 +19,6 @@ export class HistoriaPage {
     addIcons({ locationOutline });
   }
 
-  // Cada vez que se entra en la pantalla, recargamos
   ionViewWillEnter() {
     this.tiendas.cargar();
   }

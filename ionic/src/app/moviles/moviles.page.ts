@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import {
-  IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonSpinner,
+  IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonSpinner, IonCard, IonImg,
   IonRefresher, IonRefresherContent,
 } from '@ionic/angular';
 import { ApiService, Dispositivo } from '../api.service';
@@ -10,19 +10,18 @@ import { OperacionesService } from '../operaciones.service';
   standalone: true,
   selector: 'app-moviles',
   templateUrl: './moviles.page.html',
-  imports: [IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonSpinner,
+  imports: [IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonSpinner, IonCard, IonImg,
     IonRefresher, IonRefresherContent],
 })
 export class MovilesPage implements OnInit {
   filtros = ['Todos', 'Smartphones', 'Tablets'];
   filtro = signal('Todos');
 
-  // Usamos signals: la app no lleva zone.js y asi Angular sabe cuando repintar
-  datos = signal<Dispositivo[]>([]); // telefonos y tablets juntos
+  datos = signal<Dispositivo[]>([]);
   cargando = signal(false);
   error = signal('');
 
-  enviando = signal(false); // true mientras se compra/alquila (botones desactivados)
+  enviando = signal(false);
 
   constructor(public api: ApiService, private operaciones: OperacionesService) {}
 
@@ -30,7 +29,6 @@ export class MovilesPage implements OnInit {
     this.cargar();
   }
 
-  // Pedimos telefonos y tablets de una vez y filtramos en la app
   cargar(event?: any) {
     this.cargando.set(true);
     this.error.set('');
@@ -48,7 +46,6 @@ export class MovilesPage implements OnInit {
     });
   }
 
-  // Lista filtrada: se recalcula sola cuando cambian datos o filtro
   lista = computed(() => {
     if (this.filtro() === 'Smartphones') {
       return this.datos().filter(d => d.tipo === 'telefono');
@@ -59,7 +56,6 @@ export class MovilesPage implements OnInit {
     return this.datos();
   });
 
-  // Compra 1 unidad y despues recarga la lista para ver el stock nuevo
   async comprar(producto: Dispositivo) {
     this.enviando.set(true);
     const enviado = await this.operaciones.comprar(producto);

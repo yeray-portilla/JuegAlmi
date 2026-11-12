@@ -20,7 +20,7 @@
     </div>
   } @else {
     @for (t of tiendas.datos(); track t.id) {
-      <div class="tienda">
+      <ion-card class="tienda">
         <div class="cabecera">
           <strong>{{ t.nombre }}</strong>
           @if (tiendas.distancia(t)) {
@@ -28,14 +28,13 @@
           }
         </div>
         <span class="muted"><ion-icon name="location-outline"></ion-icon> {{ t.direccion }}</span>
-        <!-- Mapa de Leaflet (lo crea pintarMapas() en el .ts) -->
         <div class="mapa" [id]="'mapa-' + t.id"></div>
         <div class="botones">
           <ion-button size="small" (click)="tiendas.comoLlegar(t)">
             <ion-icon slot="start" name="navigate-outline"></ion-icon>Cómo llegar
           </ion-button>
         </div>
-      </div>
+      </ion-card>
     } @empty {
       <div class="estado"><span class="muted">No hay tiendas.</span></div>
     }

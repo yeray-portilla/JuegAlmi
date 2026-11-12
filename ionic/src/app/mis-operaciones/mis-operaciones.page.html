@@ -27,10 +27,9 @@
   } @else {
     @for (op of lista(); track op.tipo + op.id) {
       @if (op.tipo === 'reparacion') {
-        <!-- Solicitud de reparacion: estado, foto, motivo del rechazo y precio de la reparacion -->
-        <div class="prod">
+        <ion-card class="prod">
           @if (op.url_foto) {
-            <img [src]="api.urlFoto(op.url_foto)" [alt]="op.dispositivo" (error)="api.fotoRota($event)" loading="lazy">
+            <ion-img [src]="api.urlFoto(op.url_foto)" [alt]="op.dispositivo" (ionError)="api.fotoRota($event)"></ion-img>
           }
           <div class="info">
             <strong>{{ op.dispositivo }}</strong>
@@ -50,9 +49,9 @@
               </div>
             }
           </div>
-        </div>
+        </ion-card>
       } @else {
-      <div class="prod">
+      <ion-card class="prod">
         <div class="info">
           <strong>{{ op.tipo === 'compra' ? 'Compra' : 'Alquiler' }} #{{ op.id }}</strong>
           <span class="muted">{{ textoDetalle(op) }}</span>
@@ -61,7 +60,6 @@
             <span [class]="'estado-op ' + op.estado">{{ op.estado }}</span>
           </span>
           <span class="precio">{{ op.total }} €</span>
-          <!-- Activo: Devolver. Pendiente (aun no ha empezado): Cancelar. Las dos usan la misma ruta de la API -->
           @if (op.tipo === 'alquiler' && (op.estado === 'activo' || op.estado === 'pendiente')) {
             <div class="botones">
               <ion-button size="small" fill="outline" [disabled]="devolviendo() !== null" (click)="devolver(op)">
@@ -74,7 +72,7 @@
             </div>
           }
         </div>
-      </div>
+      </ion-card>
       }
     } @empty {
       <div class="estado">

@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import {
-  IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonSpinner,
+  IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonSpinner, IonCard, IonImg,
   IonRefresher, IonRefresherContent, IonModal, IonInput, IonTitle,
 } from '@ionic/angular';
 import { ApiService, Videojuego } from '../api.service';
@@ -10,18 +10,16 @@ import { OperacionesService, fechaTexto } from '../operaciones.service';
   standalone: true,
   selector: 'app-videojuegos',
   templateUrl: './videojuegos.page.html',
-  imports: [IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonSpinner,
+  imports: [IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonSpinner, IonCard, IonImg,
     IonRefresher, IonRefresherContent, IonModal, IonInput, IonTitle],
 })
 export class VideojuegosPage implements OnInit {
-  // Usamos signals: la app no lleva zone.js y asi Angular sabe cuando repintar
   datos = signal<Videojuego[]>([]);
   cargando = signal(false);
   error = signal('');
-  enviando = signal(false); // true mientras se compra/alquila (botones desactivados)
+  enviando = signal(false);
 
-  // Ventana para elegir las fechas del alquiler
-  juegoAlquiler = signal<Videojuego | null>(null); // null = ventana cerrada
+  juegoAlquiler = signal<Videojuego | null>(null);
   fechaInicio = signal('');
   fechaFin = signal('');
   errorFechas = signal('');
@@ -33,7 +31,6 @@ export class VideojuegosPage implements OnInit {
     this.cargar();
   }
 
-  // Pide los videojuegos a la API (event = el "tirar para recargar", si lo hay)
   cargar(event?: any) {
     this.cargando.set(true);
     this.error.set('');
@@ -51,7 +48,6 @@ export class VideojuegosPage implements OnInit {
     });
   }
 
-  // Compra 1 unidad y despues recarga la lista para ver el stock nuevo
   async comprar(videojuego: Videojuego) {
     this.enviando.set(true);
     const enviado = await this.operaciones.comprar(videojuego);
@@ -61,7 +57,6 @@ export class VideojuegosPage implements OnInit {
     }
   }
 
-  // Abre la ventana de fechas: por defecto, de hoy a dentro de 7 dias
   abrirAlquiler(videojuego: Videojuego) {
     const dentroDeUnaSemana = new Date();
     dentroDeUnaSemana.setDate(dentroDeUnaSemana.getDate() + 7);
@@ -79,7 +74,6 @@ export class VideojuegosPage implements OnInit {
     const juego = this.juegoAlquiler();
     const inicio = this.fechaInicio();
     const fin = this.fechaFin();
-    // Las fechas yyyy-MM-dd se pueden comparar como texto
     if (!inicio || !fin) {
       this.errorFechas.set('Elige las dos fechas.');
       return;
@@ -99,6 +93,6 @@ export class VideojuegosPage implements OnInit {
     this.enviando.set(true);
     await this.operaciones.alquilar(juego, inicio, fin);
     this.enviando.set(false);
-    this.cargar(); // recargamos para ver las copias que quedan
+    this.cargar();
   }
 }

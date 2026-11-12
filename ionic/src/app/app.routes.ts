@@ -10,7 +10,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./mis-operaciones/mis-operaciones.page').then(m => m.MisOperacionesPage),
   },
-  // Informacion de las tiendas (menu lateral): Historia, Ubicacion y Galeria
   {
     path: 'historia',
     canActivate: [authGuard],

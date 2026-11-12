@@ -3,12 +3,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { environment } from '../environments/environment';
 
-// ---- Tipos basicos que devuelve la API ----
 export interface Usuario {
   id: number;
   nombre_usuario: string;
   email: string;
-  roles: string[]; // si contiene 'ROLE_ADMIN' es administrador
+  roles: string[];
 }
 
 export interface LoginRespuesta {
@@ -16,18 +15,16 @@ export interface LoginRespuesta {
   usuario: Usuario;
 }
 
-// Datos comunes de cualquier producto del catalogo
 export interface Producto {
   id: number;
   nombre: string;
-  marca: string; // fabricante o editora ("Indie" / "Por definir" si no tiene)
+  marca: string;
   descripcion: string | null;
   precio: number;
   stock: number;
   foto_url: string | null;
 }
 
-// Telefono o tablet
 export interface Dispositivo extends Producto {
   modelo: string;
   pulgadas: number;
@@ -47,7 +44,6 @@ export interface Consola extends Producto {
   almacenamiento: string;
 }
 
-// Respuestas de comprar y alquilar
 export interface CompraRespuesta {
   compra_id: number;
   total: number;
@@ -58,16 +54,13 @@ export interface AlquilerRespuesta {
   total: number;
 }
 
-// Una fila de GET /operaciones/mis-operaciones
 export interface Operacion {
   tipo: 'compra' | 'alquiler' | 'reparacion';
   id: number;
-  fecha: string; // yyyy-MM-dd (en alquileres, la fecha de inicio)
-  estado: string; // compra: completada; alquiler: pendiente | activo | finalizado
+  fecha: string;
+  estado: string;
   total: number | null;
-  // compra: [{nombre, cantidad, precio_unidad}]; alquiler: [{nombre}]
   detalle?: { nombre: string; cantidad?: number; precio_unidad?: number }[];
-  // Solo reparaciones (estado: pendiente | rechazada | en_proceso | completada)
   dispositivo?: string;
   solicitud_id?: number;
   reparacion_id?: number | null;
@@ -76,7 +69,6 @@ export interface Operacion {
   motivo_rechazo?: string | null;
 }
 
-// ---- Soporte ----
 export interface Marca {
   id: number;
   nombre: string;
@@ -96,12 +88,9 @@ export interface Tienda {
   latitud: number;
   longitud: number;
   fotos: string[];
-  // Departamentos que repara la tienda. Hace falta el cambio en el backend (opcion 1);
-  // mientras no llegue sera undefined y la app muestra todas las tiendas.
   departamentos?: { id: number; nombre: string }[];
 }
 
-// Un aparato del cliente (GET/POST /soporte/dispositivos)
 export interface Aparato {
   id: number;
   marca_id: number;
@@ -111,14 +100,13 @@ export interface Aparato {
   modelo: string;
 }
 
-// Una solicitud vista por el administrador (GET /admin/solicitudes)
 export interface SolicitudAdmin {
   id: number;
   fecha: string;
   estado: 'pendiente' | 'aceptada' | 'rechazada';
-  usuario: string;     // nombre de usuario
-  dispositivo: string; // marca + modelo
-  tipo: string;        // departamento
+  usuario: string;
+  dispositivo: string;
+  tipo: string;
   tienda: string;
   descripcion: string;
   url_foto: string | null;
@@ -126,7 +114,6 @@ export interface SolicitudAdmin {
   longitud: number;
   motivo_rechazo: string | null;
   reparacion_id: number | null;
-  // La API actual NO manda estos tres. Si el backend los anade, la app los usa.
   reparacion_estado?: 'en_proceso' | 'completada';
   precio_estimado?: number | null;
   precio_final?: number | null;
@@ -138,27 +125,18 @@ export interface SolicitudRespuesta {
   url_foto: string | null;
 }
 
-// Linea de una compra: producto y unidades
 export interface LineaCompra {
   id: number;
   cantidad: number;
 }
 
-/**
- * Servicio con UN metodo por cada ruta de la API (ver docs/ApiController.php).
- * El token lo anade auth.interceptor.ts, aqui no hace falta tocarlo.
- * Solo el login respeta environment.mock (para poder entrar sin API).
- */
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  // Todas las rutas empiezan por /api
   private url = `${environment.apiUrl}/api`;
 
   constructor(private http: HttpClient) {}
 
-  // ===================== Usuarios =====================
 
-  // login puede ser el email o el nombre de usuario
   iniciarSesion(login: string, password: string): Observable<LoginRespuesta> {
     if (environment.mock) {
       return of({
@@ -173,9 +151,7 @@ export class ApiService {
     return this.http.post<Usuario>(`${this.url}/auth/register`, { nombre_usuario, email, password });
   }
 
-  // ===================== Catalogo =====================
 
-  // Foto de un producto: si no tiene, el icono de la app; si la ruta es relativa, le ponemos el servidor delante
   urlFoto(ruta: string | null): string {
     if (!ruta) {
       return 'assets/icon/favicon.png';
@@ -186,20 +162,17 @@ export class ApiService {
     return environment.apiUrl + (ruta.startsWith('/') ? '' : '/') + ruta;
   }
 
-  // Si una foto no carga, ponemos el icono de la app (solo una vez, para no entrar en bucle)
   fotoRota(evento: Event) {
-    const img = evento.target as HTMLImageElement;
-    if (!img.src.endsWith('assets/icon/favicon.png')) {
+    const img = evento.target as HTMLIonImgElement;
+    if (!img.src?.endsWith('assets/icon/favicon.png')) {
       img.src = 'assets/icon/favicon.png';
     }
   }
 
-  // Texto del error para el usuario: la API manda {"error": "mensaje"}
   mensajeError(e: any): string {
     return e?.error?.error ?? 'No se pudo conectar con el servidor.';
   }
 
-  // tipo opcional: 'telefono' o 'tablet' (sin tipo salen los dos)
   obtenerDispositivos(tipo?: 'telefono' | 'tablet'): Observable<Dispositivo[]> {
     let params = new HttpParams();
     if (tipo) {
@@ -216,14 +189,11 @@ export class ApiService {
     return this.http.get<Consola[]>(`${this.url}/productos/consolas`);
   }
 
-  // ===================== Compras y alquileres =====================
 
-  // Si el usuario niega el GPS, mandar latitud y longitud = 0
   comprar(productos: LineaCompra[], latitud: number, longitud: number): Observable<CompraRespuesta> {
     return this.http.post<CompraRespuesta>(`${this.url}/operaciones/comprar`, { productos, latitud, longitud });
   }
 
-  // Fechas con formato yyyy-MM-dd. videojuegos = lista de ids
   alquilar(idsVideojuegos: number[], fecha_inicio: string, fecha_fin: string,
            latitud: number, longitud: number): Observable<AlquilerRespuesta> {
     const videojuegos = idsVideojuegos.map(id => ({ id }));
@@ -235,23 +205,19 @@ export class ApiService {
     return this.http.put(`${this.url}/operaciones/alquileres/${id}/devolver`, {});
   }
 
-  // Compras, alquileres y reparaciones del usuario
   obtenerMisOperaciones(): Observable<Operacion[]> {
     return this.http.get<Operacion[]>(`${this.url}/operaciones/mis-operaciones`);
   }
 
-  // ===================== Soporte (usuario) =====================
 
   obtenerMisDispositivos(): Observable<Aparato[]> {
     return this.http.get<Aparato[]>(`${this.url}/soporte/dispositivos`);
   }
 
-  // Si el aparato ya existia, la API devuelve el que ya estaba (no lo duplica)
   crearDispositivo(marca_id: number, departamento_id: number, modelo: string): Observable<Aparato> {
     return this.http.post<Aparato>(`${this.url}/soporte/dispositivos`, { marca_id, departamento_id, modelo });
   }
 
-  // foto_base64 es opcional (foto de la camara, calidad ~65%)
   crearSolicitud(datos: {
     dispositivo_id: number;
     tienda_id: number;
@@ -263,19 +229,15 @@ export class ApiService {
     return this.http.post<SolicitudRespuesta>(`${this.url}/soporte/solicitudes`, datos);
   }
 
-  // Solo se puede si la solicitud esta pendiente
   editarSolicitud(id: number, descripcion: string): Observable<any> {
     return this.http.put(`${this.url}/soporte/solicitudes/${id}`, { descripcion });
   }
 
-  // Solo si esta pendiente. La API responde 204 (sin contenido)
   cancelarSolicitud(id: number): Observable<any> {
     return this.http.delete(`${this.url}/soporte/solicitudes/${id}`);
   }
 
-  // ===================== Administrador (ROLE_ADMIN) =====================
 
-  // estado opcional: pendiente, aceptada o rechazada (sin estado salen todas)
   obtenerSolicitudesAdmin(estado?: string): Observable<SolicitudAdmin[]> {
     let params = new HttpParams();
     if (estado) {
@@ -292,12 +254,10 @@ export class ApiService {
     return this.http.put(`${this.url}/admin/solicitudes/${id}/rechazar`, { motivo });
   }
 
-  // Al pasar a 'completada' el precio_final es obligatorio
   actualizarReparacion(id: number, estado: 'en_proceso' | 'completada', precio_final?: number): Observable<any> {
     return this.http.put(`${this.url}/admin/reparaciones/${id}`, { estado, precio_final });
   }
 
-  // ===================== Informacion =====================
 
   obtenerTiendas(): Observable<Tienda[]> {
     return this.http.get<Tienda[]>(`${this.url}/info/tiendas`);
@@ -307,7 +267,6 @@ export class ApiService {
     return this.http.get<Departamento[]>(`${this.url}/info/departamentos`);
   }
 
-  // Marcas fabricantes ("Otra" va al final)
   obtenerMarcas(): Observable<Marca[]> {
     return this.http.get<Marca[]>(`${this.url}/info/marcas`);
   }

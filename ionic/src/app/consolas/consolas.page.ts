@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import {
-  IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonSpinner,
+  IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonSpinner, IonCard, IonImg,
   IonRefresher, IonRefresherContent,
 } from '@ionic/angular';
 import { ApiService, Consola } from '../api.service';
@@ -10,16 +10,15 @@ import { OperacionesService } from '../operaciones.service';
   standalone: true,
   selector: 'app-consolas',
   templateUrl: './consolas.page.html',
-  imports: [IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonSpinner,
+  imports: [IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonSpinner, IonCard, IonImg,
     IonRefresher, IonRefresherContent],
 })
 export class ConsolasPage implements OnInit {
-  // Usamos signals: la app no lleva zone.js y asi Angular sabe cuando repintar
   datos = signal<Consola[]>([]);
   cargando = signal(false);
   error = signal('');
 
-  enviando = signal(false); // true mientras se compra/alquila (botones desactivados)
+  enviando = signal(false);
 
   constructor(public api: ApiService, private operaciones: OperacionesService) {}
 
@@ -27,7 +26,6 @@ export class ConsolasPage implements OnInit {
     this.cargar();
   }
 
-  // Pide las consolas a la API (event = el "tirar para recargar", si lo hay)
   cargar(event?: any) {
     this.cargando.set(true);
     this.error.set('');
@@ -45,7 +43,6 @@ export class ConsolasPage implements OnInit {
     });
   }
 
-  // Compra 1 unidad y despues recarga la lista para ver el stock nuevo
   async comprar(producto: Consola) {
     this.enviando.set(true);
     const enviado = await this.operaciones.comprar(producto);

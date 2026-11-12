@@ -5,10 +5,6 @@ import { ApiService, Producto, Videojuego } from './api.service';
 import { AvisoService } from './aviso.service';
 import { UbicacionService } from './ubicacion.service';
 
-/**
- * Comprar y alquilar, para usar desde cualquier pagina del catalogo.
- * Devuelven true si se llego a enviar a la API (bien o mal): asi la pagina sabe que debe recargar el stock.
- */
 @Injectable({ providedIn: 'root' })
 export class OperacionesService {
   constructor(
@@ -18,7 +14,6 @@ export class OperacionesService {
     private alertas: AlertController,
   ) {}
 
-  // Pregunta antes de comprar (1 unidad). Devuelve false si el usuario cancela.
   async comprar(producto: Producto): Promise<boolean> {
     const confirmado = await this.confirmar('Comprar', `¿Comprar "${producto.nombre}" por ${producto.precio} €?`);
     if (!confirmado) {
@@ -35,7 +30,6 @@ export class OperacionesService {
     return true;
   }
 
-  // Fechas en formato yyyy-MM-dd (ya elegidas en la pagina)
   async alquilar(videojuego: Videojuego, inicio: string, fin: string): Promise<boolean> {
     const gps = await this.ubicacion.obtener();
     try {
@@ -49,7 +43,6 @@ export class OperacionesService {
     }
   }
 
-  // Alerta con Cancelar / Aceptar
   private async confirmar(titulo: string, mensaje: string): Promise<boolean> {
     const alerta = await this.alertas.create({
       header: titulo,
@@ -65,7 +58,6 @@ export class OperacionesService {
   }
 }
 
-// Fecha local en formato yyyy-MM-dd (toISOString usaria la hora UTC y podria cambiar el dia)
 export function fechaTexto(fecha: Date): string {
   const mes = String(fecha.getMonth() + 1).padStart(2, '0');
   const dia = String(fecha.getDate()).padStart(2, '0');

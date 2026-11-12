@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import {
-  IonHeader, IonToolbar, IonButtons, IonBackButton, IonContent, IonButton, IonSpinner,
+  IonHeader, IonToolbar, IonButtons, IonBackButton, IonContent, IonButton, IonSpinner, IonCard, IonImg,
   IonRefresher, IonRefresherContent, IonSegment, IonSegmentButton, IonLabel, AlertController,
 } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
@@ -13,19 +13,17 @@ type Filtro = 'pendiente' | 'aceptada' | 'rechazada';
   standalone: true,
   selector: 'app-admin',
   templateUrl: './admin.page.html',
-  imports: [IonHeader, IonToolbar, IonButtons, IonBackButton, IonContent, IonButton, IonSpinner,
+  imports: [IonHeader, IonToolbar, IonButtons, IonBackButton, IonContent, IonButton, IonSpinner, IonCard, IonImg,
     IonRefresher, IonRefresherContent, IonSegment, IonSegmentButton, IonLabel],
 })
 export class AdminPage {
-  // Signals: la app no lleva zone.js
   filtro = signal<Filtro>('pendiente');
   datos = signal<SolicitudAdmin[]>([]);
   cargando = signal(false);
   error = signal('');
-  enviando = signal<number | null>(null); // id de la solicitud que se esta guardando
+  enviando = signal<number | null>(null);
 
-  // Reparaciones que sabemos que ya estan completadas (la API no lo dice en la lista)
-  completadas = signal<Record<number, number | null>>({}); // reparacion_id -> precio final
+  completadas = signal<Record<number, number | null>>({});
 
   constructor(public api: ApiService, private aviso: AvisoService, private alertas: AlertController) {}
 
@@ -52,13 +50,11 @@ export class AdminPage {
 
   cambiarFiltro(evento: any) {
     this.filtro.set(evento.detail.value);
-    this.datos.set([]); // asi se ve el spinner mientras llega la otra lista
+    this.datos.set([]);
     this.cargar();
   }
 
-  // ---------- Ayudas para la plantilla ----------
 
-  // true si la reparacion de esta solicitud ya esta completada
   estaCompletada(s: SolicitudAdmin): boolean {
     if (s.reparacion_estado === 'completada') {
       return true;
@@ -73,7 +69,6 @@ export class AdminPage {
     return s.reparacion_id !== null ? this.completadas()[s.reparacion_id] ?? null : null;
   }
 
-  // 0, 0 = el cliente no dio permiso de GPS
   tieneUbicacion(s: SolicitudAdmin): boolean {
     return s.latitud !== 0 || s.longitud !== 0;
   }
@@ -82,7 +77,6 @@ export class AdminPage {
     return `https://www.google.com/maps?q=${s.latitud},${s.longitud}`;
   }
 
-  // ---------- Acciones ----------
 
   async aceptar(s: SolicitudAdmin) {
     const precio = await this.pedirNumero('Aceptar solicitud',
@@ -130,7 +124,6 @@ export class AdminPage {
       this.completadas.update(c => ({ ...c, [reparacionId]: precio }));
     } catch (e: any) {
       this.aviso.mostrar(this.api.mensajeError(e), 'danger');
-      // 409 = ya estaba completada: escondemos el boton
       if (e?.status === 409) {
         this.completadas.update(c => ({ ...c, [reparacionId]: null }));
       }
@@ -138,7 +131,6 @@ export class AdminPage {
     this.enviando.set(null);
   }
 
-  // Llama a la API, muestra el resultado y recarga la lista
   private async enviar(s: SolicitudAdmin, peticion: () => any, mensajeOk: string) {
     this.enviando.set(s.id);
     try {
@@ -151,8 +143,6 @@ export class AdminPage {
     this.cargar();
   }
 
-  // Alerta con un campo numerico. Devuelve null si se cancela o el numero no vale.
-  // permitirCero: el precio final puede ser 0 (garantia); el estimado tiene que ser > 0.
   private async pedirNumero(titulo: string, mensaje: string, nombre: string, permitirCero: boolean): Promise<number | null> {
     const alerta = await this.alertas.create({
       header: titulo,

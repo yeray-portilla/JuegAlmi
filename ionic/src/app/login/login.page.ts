@@ -10,14 +10,13 @@ import { AuthService } from '../auth.service';
   imports: [IonContent, IonButton, IonInput, FormsModule],
 })
 export class LoginPage {
-  login = ''; // email o nombre de usuario
+  login = '';
   password = '';
   error = '';
-  cargando = signal(false); // signal: sin zone.js, asi el boton se repinta
+  cargando = signal(false);
 
   constructor(private router: Router, private auth: AuthService, private toast: ToastController) {}
 
-  // Si ya hay sesion, vamos directos al catalogo
   ionViewWillEnter() {
     if (this.auth.logueado) {
       this.router.navigateByUrl('/tabs/moviles');
@@ -39,7 +38,6 @@ export class LoginPage {
       },
       error: (e) => {
         this.cargando.set(false);
-        // La API manda {"error": "mensaje"}; si no hay respuesta, es problema de conexion
         const mensaje = e.error?.error ?? 'No se pudo conectar con el servidor.';
         this.mostrarToast(mensaje);
       },

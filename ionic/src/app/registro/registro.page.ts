@@ -13,19 +13,16 @@ import { AvisoService } from '../aviso.service';
   imports: [IonContent, IonButton, IonInput],
 })
 export class RegistroPage {
-  // Limites (la contraseña minima la exige la API; el maximo del usuario es el de la columna)
   readonly MAX_USUARIO = 180;
   readonly MIN_PASSWORD = 6;
 
-  // Campos del formulario (signals: la app no lleva zone.js)
   nombre = signal('');
   email = signal('');
   password = signal('');
   repetir = signal('');
   cargando = signal(false);
-  intentado = signal(false); // los errores solo se ven despues de pulsar "Crear cuenta"
+  intentado = signal(false);
 
-  // Un mensaje por campo ('' = todo bien)
   errorNombre = computed(() => {
     const n = this.nombre().trim();
     if (!n) return 'Escribe un nombre de usuario.';
@@ -36,7 +33,6 @@ export class RegistroPage {
   errorEmail = computed(() => {
     const e = this.email().trim();
     if (!e) return 'Escribe tu correo.';
-    // Formato sencillo: algo@algo.algo, sin espacios
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) return 'El correo no tiene un formato válido.';
     return '';
   });
@@ -57,14 +53,12 @@ export class RegistroPage {
     private router: Router,
   ) {}
 
-  // Si ya hay sesion, no tiene sentido registrarse: al catalogo
   ionViewWillEnter() {
     if (this.auth.logueado) {
       this.router.navigateByUrl('/tabs/moviles');
     }
   }
 
-  // Lee el valor de un ion-input
   valor(evento: any): string {
     return evento.detail.value ?? '';
   }
@@ -80,7 +74,6 @@ export class RegistroPage {
 
     this.cargando.set(true);
 
-    // 1) Crear la cuenta. Si falla (409 ya existe, 400 datos mal), mostramos el mensaje de la API.
     try {
       await firstValueFrom(this.api.registrarUsuario(nombre, email, password));
     } catch (e) {
@@ -89,14 +82,12 @@ export class RegistroPage {
       return;
     }
 
-    // 2) Login automatico con las mismas credenciales (el registro no devuelve token)
     try {
       await firstValueFrom(this.auth.login(nombre, password));
       this.aviso.mostrar(`¡Bienvenido, ${nombre}!`);
       this.limpiar();
       this.router.navigateByUrl('/tabs/moviles');
     } catch (e) {
-      // La cuenta ya existe, pero no se pudo entrar: que lo intente desde el login
       this.aviso.mostrar('Cuenta creada, pero no se pudo iniciar sesión. Entra desde el login.', 'danger');
       this.router.navigateByUrl('/login');
     }

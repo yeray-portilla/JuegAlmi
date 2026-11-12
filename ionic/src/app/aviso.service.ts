@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 
-// Muestra mensajes cortos (toast) abajo de la pantalla
 @Injectable({ providedIn: 'root' })
 export class AvisoService {
   constructor(private toast: ToastController) {}

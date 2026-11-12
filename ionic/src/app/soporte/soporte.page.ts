@@ -1,7 +1,7 @@
 import { Component, computed, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonIcon, IonSpinner,
+  IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonIcon, IonSpinner, IonCard,
   IonSegment, IonSegmentButton, IonLabel, IonTextarea, IonSelect, IonSelectOption, IonInput,
   IonRefresher, IonRefresherContent,
 } from '@ionic/angular';
@@ -13,7 +13,6 @@ import { ApiService, Aparato, Departamento, Marca, Tienda } from '../api.service
 import { AvisoService } from '../aviso.service';
 import { UbicacionService } from '../ubicacion.service';
 
-// Las solicitudes ya enviadas se ven en Mis operaciones > Mis solicitudes
 type Vista = 'aparatos' | 'pedir';
 
 @Component({
@@ -21,45 +20,37 @@ type Vista = 'aparatos' | 'pedir';
   selector: 'app-soporte',
   templateUrl: './soporte.page.html',
   imports: [
-    IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonIcon, IonSpinner,
+    IonHeader, IonToolbar, IonButtons, IonMenuButton, IonContent, IonButton, IonIcon, IonSpinner, IonCard,
     IonSegment, IonSegmentButton, IonLabel, IonTextarea, IonSelect, IonSelectOption, IonInput,
     IonRefresher, IonRefresherContent,
   ],
 })
 export class SoportePage {
-  // Limites de la API (si se pasan, responde 400)
   readonly LIMITE_DESCRIPCION = 255;
   readonly LIMITE_MODELO = 100;
 
-  // ---- Estado general (todo con signals: la app no lleva zone.js) ----
   vista = signal<Vista>('aparatos');
   cargando = signal(false);
   error = signal('');
-  enviando = signal(false); // true mientras se guarda algo (botones desactivados)
+  enviando = signal(false);
 
-  // ---- Datos que vienen de la API ----
   marcas = signal<Marca[]>([]);
   departamentos = signal<Departamento[]>([]);
   tiendas = signal<Tienda[]>([]);
   aparatos = signal<Aparato[]>([]);
 
-  // ---- Formulario "Mis aparatos" ----
   nuevaMarca = signal<number | null>(null);
   nuevoDepartamento = signal<number | null>(null);
   nuevoModelo = signal('');
 
-  // ---- Formulario "Pedir reparacion" ----
   aparatoElegido = signal<number | null>(null);
   tiendaElegida = signal<number | null>(null);
   descripcion = signal('');
-  fotoBase64 = signal(''); // sin el prefijo "data:image/...;base64,"
+  fotoBase64 = signal('');
   fotoFormato = signal('jpeg');
 
-  // true si la API ya manda los departamentos de cada tienda (cambio del backend)
   hayFiltroTiendas = computed(() => this.tiendas().some(t => Array.isArray(t.departamentos)));
 
-  // Tiendas que reparan el tipo de aparato elegido.
-  // Si la API todavia no manda "departamentos", salen todas (y la API avisara si no la repara).
   tiendasDisponibles = computed(() => {
     const aparato = this.aparatos().find(a => a.id === this.aparatoElegido());
     if (!aparato) {
@@ -80,12 +71,10 @@ export class SoportePage {
     addIcons({ cameraOutline, trashOutline });
   }
 
-  // Cada vez que se entra en la pestaña recargamos (por si ha cambiado algo)
   ionViewWillEnter() {
     this.cargar();
   }
 
-  // Pide todo lo que necesita la pagina a la vez
   cargar(event?: any) {
     this.cargando.set(true);
     this.error.set('');
@@ -111,7 +100,6 @@ export class SoportePage {
     });
   }
 
-  // Recarga solo mis aparatos (despues de guardar uno)
   private recargarAparatos() {
     this.api.obtenerMisDispositivos().subscribe({
       next: (lista) => this.aparatos.set(lista),
@@ -123,7 +111,6 @@ export class SoportePage {
     this.vista.set(evento.detail.value);
   }
 
-  // =================== Mis aparatos ===================
 
   async anadirAparato() {
     const marca = this.nuevaMarca();
@@ -136,7 +123,6 @@ export class SoportePage {
     this.enviando.set(true);
     try {
       const aparato = await firstValueFrom(this.api.crearDispositivo(marca, departamento, modelo));
-      // La API no duplica: si ya existia devuelve el mismo id
       const yaEstaba = this.aparatos().some(a => a.id === aparato.id);
       this.aviso.mostrar(yaEstaba ? 'Ya tenías ese aparato guardado.' : 'Aparato guardado.');
       this.nuevoModelo.set('');
@@ -147,15 +133,12 @@ export class SoportePage {
     this.enviando.set(false);
   }
 
-  // Desde "Mis aparatos": ir directamente a pedir la reparacion de ese aparato
   repararAparato(aparato: Aparato) {
     this.elegirAparato(aparato.id);
     this.vista.set('pedir');
   }
 
-  // =================== Pedir reparacion ===================
 
-  // Al cambiar de aparato, la tienda elegida puede dejar de valer
   elegirAparato(id: number | null) {
     this.aparatoElegido.set(id);
     const sigueValiendo = this.tiendasDisponibles().some(t => t.id === this.tiendaElegida());
@@ -164,20 +147,17 @@ export class SoportePage {
     }
   }
 
-  // Foto con la camara, calidad 65 y en base64 (lo que pide la API en foto_base64).
-  // getPhoto esta marcado como obsoleto en Camera 8, pero es el que devuelve la foto entera en base64.
   async hacerFoto() {
     try {
       const foto = await Camera.getPhoto({
         quality: 65,
-        width: 1280, // asi la foto no pasa de los 5 MB que admite la API
+        width: 1280,
         resultType: CameraResultType.Base64,
         source: CameraSource.Camera,
       });
       this.fotoBase64.set(foto.base64String ?? '');
       this.fotoFormato.set(foto.format || 'jpeg');
     } catch {
-      // El usuario ha cancelado o no ha dado permiso: no hacemos nada
     }
   }
 
@@ -185,7 +165,6 @@ export class SoportePage {
     this.fotoBase64.set('');
   }
 
-  // Para ver la foto en la pantalla
   get fotoUrl(): string {
     return `data:image/${this.fotoFormato()};base64,${this.fotoBase64()}`;
   }
@@ -199,7 +178,7 @@ export class SoportePage {
       return;
     }
     this.enviando.set(true);
-    const gps = await this.ubicacion.obtener(); // 0, 0 si no hay permiso
+    const gps = await this.ubicacion.obtener();
     try {
       await firstValueFrom(this.api.crearSolicitud({
         dispositivo_id: aparato,
@@ -210,7 +189,6 @@ export class SoportePage {
         ...(this.fotoBase64() ? { foto_base64: this.fotoBase64() } : {}),
       }));
       this.aviso.mostrar('Solicitud enviada. Un administrador la revisará.');
-      // Limpiamos el formulario y vamos a Mis operaciones > Mis solicitudes
       this.aparatoElegido.set(null);
       this.tiendaElegida.set(null);
       this.descripcion.set('');
