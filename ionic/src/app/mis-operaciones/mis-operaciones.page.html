@@ -1,0 +1,89 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="/tabs/moviles"></ion-back-button></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="cargar($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <h1 class="titulo">Mis operaciones</h1>
+
+  <ion-segment [value]="vista()" (ionChange)="cambiarVista($event)">
+    <ion-segment-button value="compra"><ion-label>Compras</ion-label></ion-segment-button>
+    <ion-segment-button value="alquiler"><ion-label>Alquileres</ion-label></ion-segment-button>
+    <ion-segment-button value="reparacion"><ion-label>Mis solicitudes</ion-label></ion-segment-button>
+  </ion-segment>
+
+  @if (cargando() && datos().length === 0) {
+    <div class="estado"><ion-spinner name="crescent"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="estado">
+      <span class="err">{{ error() }}</span>
+      <ion-button size="small" fill="outline" (click)="cargar()">Reintentar</ion-button>
+    </div>
+  } @else {
+    @for (op of lista(); track op.tipo + op.id) {
+      @if (op.tipo === 'reparacion') {
+        <ion-card class="prod">
+          @if (op.url_foto) {
+            <ion-img [src]="api.urlFoto(op.url_foto)" [alt]="op.dispositivo" (ionError)="api.fotoRota($event)"></ion-img>
+          }
+          <div class="info">
+            <strong>{{ op.dispositivo }}</strong>
+            <span class="muted">{{ op.fecha }} · <span [class]="'estado-op texto ' + op.estado">{{ textoEstado(op.estado) }}</span></span>
+            <span class="muted">{{ op.descripcion }}</span>
+            @if (op.estado === 'rechazada' && op.motivo_rechazo) {
+              <span class="err">Motivo: {{ op.motivo_rechazo }}</span>
+            }
+            @if (op.total !== null) {
+              <span class="precio">{{ op.total }} €</span>
+            }
+            @if (op.estado === 'pendiente') {
+              <div class="botones">
+                <ion-button size="small" fill="outline" [disabled]="cancelando() !== null" (click)="cancelarSolicitud(op)">
+                  {{ cancelando() === op.id ? 'Cancelando...' : 'Cancelar' }}
+                </ion-button>
+              </div>
+            }
+          </div>
+        </ion-card>
+      } @else {
+      <ion-card class="prod">
+        <div class="info">
+          <strong>{{ op.tipo === 'compra' ? 'Compra' : 'Alquiler' }} #{{ op.id }}</strong>
+          <span class="muted">{{ textoDetalle(op) }}</span>
+          <span class="muted">
+            {{ op.tipo === 'alquiler' ? 'Desde el' : 'El' }} {{ op.fecha }} ·
+            <span [class]="'estado-op ' + op.estado">{{ op.estado }}</span>
+          </span>
+          <span class="precio">{{ op.total }} €</span>
+          @if (op.tipo === 'alquiler' && (op.estado === 'activo' || op.estado === 'pendiente')) {
+            <div class="botones">
+              <ion-button size="small" fill="outline" [disabled]="devolviendo() !== null" (click)="devolver(op)">
+                @if (op.estado === 'pendiente') {
+                  {{ devolviendo() === op.id ? 'Cancelando...' : 'Cancelar' }}
+                } @else {
+                  {{ devolviendo() === op.id ? 'Devolviendo...' : 'Devolver' }}
+                }
+              </ion-button>
+            </div>
+          }
+        </div>
+      </ion-card>
+      }
+    } @empty {
+      <div class="estado">
+        <span class="muted">
+          @switch (vista()) {
+            @case ('compra') { Todavía no has comprado nada. }
+            @case ('alquiler') { Todavía no has alquilado nada. }
+            @case ('reparacion') { No has pedido ninguna reparación. }
+          }
+        </span>
+      </div>
+    }
+  }
+</ion-content>

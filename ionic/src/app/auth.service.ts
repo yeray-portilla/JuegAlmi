@@ -1,29 +1,39 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of, tap } from 'rxjs';
-import { environment } from '../environments/environment';
-
-export interface LoginRespuesta {
-  token: string;
-  expira?: string;
-}
+import { Injectable, computed, signal } from '@angular/core';
+import { Observable, tap } from 'rxjs';
+import { ApiService, LoginRespuesta, Usuario } from './api.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  constructor(private http: HttpClient) {}
+  usuario = signal<Usuario | null>(this.leerUsuarioGuardado());
 
-  login(email: string, password: string): Observable<LoginRespuesta> {
-    const peticion = environment.mock
-      ? of({ token: 'demo' })
-      : this.http.post<LoginRespuesta>(`${environment.apiUrl}/login`, { email, password });
-    return peticion.pipe(tap(r => localStorage.setItem('token', r.token)));
+  esAdmin = computed(() => this.usuario()?.roles.includes('ROLE_ADMIN') ?? false);
+
+  constructor(private api: ApiService) {}
+
+  login(login: string, password: string): Observable<LoginRespuesta> {
+    return this.api.iniciarSesion(login, password).pipe(
+      tap(r => {
+        localStorage.setItem('token', r.token);
+        localStorage.setItem('roles', JSON.stringify(r.usuario.roles));
+        localStorage.setItem('usuario', JSON.stringify(r.usuario));
+        this.usuario.set(r.usuario);
+      }),
+    );
   }
 
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('roles');
+    localStorage.removeItem('usuario');
+    this.usuario.set(null);
   }
 
   get logueado(): boolean {
     return !!localStorage.getItem('token');
+  }
+
+  private leerUsuarioGuardado(): Usuario | null {
+    const texto = localStorage.getItem('usuario');
+    return texto ? JSON.parse(texto) : null;
   }
 }

@@ -1,7 +1,23 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
+import { AuthService } from './auth.service';
 
-// Añade el token a todas las peticiones a la API
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
   const token = localStorage.getItem('token');
-  return next(token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req);
+  const peticion = token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
+
+  return next(peticion).pipe(
+    catchError((e: HttpErrorResponse) => {
+      if (e.status === 401 && !req.url.includes('/api/auth/')) {
+        auth.logout();
+        router.navigateByUrl('/login');
+      }
+      return throwError(() => e);
+    }),
+  );
 };

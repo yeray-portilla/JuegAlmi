@@ -1,0 +1,81 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="/tabs/moviles"></ion-back-button></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="cargar($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <h1 class="titulo">Administración</h1>
+
+  <ion-segment [value]="filtro()" (ionChange)="cambiarFiltro($event)">
+    <ion-segment-button value="pendiente"><ion-label>Pendientes</ion-label></ion-segment-button>
+    <ion-segment-button value="aceptada"><ion-label>Aceptadas</ion-label></ion-segment-button>
+    <ion-segment-button value="rechazada"><ion-label>Rechazadas</ion-label></ion-segment-button>
+  </ion-segment>
+
+  @if (cargando() && datos().length === 0) {
+    <div class="estado"><ion-spinner name="crescent"></ion-spinner></div>
+  } @else if (error()) {
+    <div class="estado">
+      <span class="err">{{ error() }}</span>
+      <ion-button size="small" fill="outline" (click)="cargar()">Reintentar</ion-button>
+    </div>
+  } @else {
+    @for (s of datos(); track s.id) {
+      <ion-card class="prod solicitud">
+        @if (s.url_foto) {
+          <ion-img [src]="api.urlFoto(s.url_foto)" [alt]="s.dispositivo" (ionError)="api.fotoRota($event)"></ion-img>
+        }
+        <div class="info">
+          <strong>{{ s.dispositivo }}</strong>
+          <span class="muted">{{ s.tipo }} · {{ s.tienda }}</span>
+          <span class="muted">Cliente: {{ s.usuario }} · {{ s.fecha }}</span>
+          <span class="descripcion">{{ s.descripcion }}</span>
+          <span class="muted">
+            Ubicación:
+            @if (tieneUbicacion(s)) {
+              <a [href]="urlMapa(s)" target="_blank" rel="noopener">{{ s.latitud }}, {{ s.longitud }}</a>
+            } @else {
+              no compartida
+            }
+          </span>
+
+          @if (s.estado === 'rechazada' && s.motivo_rechazo) {
+            <span class="err">Motivo: {{ s.motivo_rechazo }}</span>
+          }
+
+          @if (s.estado === 'pendiente') {
+            <div class="botones">
+              <ion-button size="small" [disabled]="enviando() !== null" (click)="aceptar(s)">Aceptar</ion-button>
+              <ion-button size="small" fill="outline" [disabled]="enviando() !== null" (click)="rechazar(s)">Rechazar</ion-button>
+            </div>
+          }
+
+          @if (s.estado === 'aceptada' && s.reparacion_id !== null) {
+            <span class="muted">
+              Reparación #{{ s.reparacion_id }}
+              @if (s.precio_estimado) { · estimado {{ s.precio_estimado }} € }
+            </span>
+            @if (estaCompletada(s)) {
+              <span class="estado-op texto completada">
+                Reparada{{ precioFinal(s) !== null ? ' · ' + precioFinal(s) + ' €' : '' }}
+              </span>
+            } @else {
+              <div class="botones">
+                <ion-button size="small" [disabled]="enviando() !== null" (click)="completar(s)">
+                  {{ enviando() === s.id ? 'Guardando...' : 'Marcar completada' }}
+                </ion-button>
+              </div>
+            }
+          }
+        </div>
+      </ion-card>
+    } @empty {
+      <div class="estado"><span class="muted">No hay solicitudes {{ filtro() }}s.</span></div>
+    }
+  }
+</ion-content>

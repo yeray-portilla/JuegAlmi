@@ -1,13 +1,18 @@
 <ion-menu contentId="main">
   <ion-content>
     <div class="menu-head">
-      <strong>Nombre de usuario</strong>
-      <span>correo@ejemplo.com</span>
+      <strong>{{ auth.usuario()?.nombre_usuario }}</strong>
+      <span>{{ auth.usuario()?.email }}</span>
     </div>
     <ion-list lines="none">
       @for (o of opciones; track o) {
         <ion-menu-toggle auto-hide="false">
-          <ion-item button detail="false">{{ o }}</ion-item>
+          <ion-item button detail="false" (click)="abrir(o)">{{ o }}</ion-item>
+        </ion-menu-toggle>
+      }
+      @if (auth.esAdmin()) {
+        <ion-menu-toggle auto-hide="false">
+          <ion-item button detail="false" (click)="abrir('Administración')">Administración</ion-item>
         </ion-menu-toggle>
       }
       <ion-menu-toggle auto-hide="false">
@@ -24,8 +29,12 @@
     <ion-tab-bar slot="bottom">
       <ion-tab-button tab="moviles">
         <ion-icon name="phone-portrait-outline"></ion-icon>
-        <ion-label>Móviles</ion-label>
+        <ion-label>Dispositivos</ion-label>
       </ion-tab-button>
+      <ion-tab-button tab="consolas">
+  <ion-icon name="tv-outline"></ion-icon>
+  <ion-label>Consolas</ion-label>
+</ion-tab-button>
       <ion-tab-button tab="videojuegos">
         <ion-icon name="game-controller-outline"></ion-icon>
         <ion-label>Videojuegos</ion-label>

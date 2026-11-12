@@ -1,0 +1,35 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="/tabs/moviles"></ion-back-button></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="tiendas.cargar($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <h1 class="titulo">Historia</h1>
+
+  @if (tiendas.cargando() && tiendas.datos().length === 0) {
+    <div class="estado"><ion-spinner name="crescent"></ion-spinner></div>
+  } @else if (tiendas.error()) {
+    <div class="estado">
+      <span class="err">{{ tiendas.error() }}</span>
+      <ion-button size="small" fill="outline" (click)="tiendas.cargar()">Reintentar</ion-button>
+    </div>
+  } @else {
+    @for (t of tiendas.datos(); track t.id) {
+      <ion-card class="tienda">
+        <strong>{{ t.nombre }}</strong>
+        <span class="muted"><ion-icon name="location-outline"></ion-icon> {{ t.direccion }}</span>
+        @if (tiendas.nombresDepartamentos(t)) {
+          <span class="muted">Departamentos: {{ tiendas.nombresDepartamentos(t) }}</span>
+        }
+        <p class="historia">{{ t.historia || 'Esta tienda todavía no tiene historia.' }}</p>
+      </ion-card>
+    } @empty {
+      <div class="estado"><span class="muted">No hay tiendas.</span></div>
+    }
+  }
+</ion-content>

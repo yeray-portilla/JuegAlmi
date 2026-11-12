@@ -1,0 +1,37 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="/tabs/moviles"></ion-back-button></ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="tiendas.cargar($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <h1 class="titulo">Galería</h1>
+
+  @if (tiendas.cargando() && tiendas.datos().length === 0) {
+    <div class="estado"><ion-spinner name="crescent"></ion-spinner></div>
+  } @else if (tiendas.error()) {
+    <div class="estado">
+      <span class="err">{{ tiendas.error() }}</span>
+      <ion-button size="small" fill="outline" (click)="tiendas.cargar()">Reintentar</ion-button>
+    </div>
+  } @else {
+    @for (t of tiendas.datos(); track t.id) {
+      <ion-card class="tienda">
+        <strong>{{ t.nombre }}</strong>
+        <div class="galeria">
+          @for (foto of t.fotos; track foto) {
+            <ion-img [src]="api.urlFoto(foto)" [alt]="t.nombre" (ionError)="api.fotoRota($event)"></ion-img>
+          } @empty {
+            <span class="muted">No hay fotos de esta tienda.</span>
+          }
+        </div>
+      </ion-card>
+    } @empty {
+      <div class="estado"><span class="muted">No hay tiendas.</span></div>
+    }
+  }
+</ion-content>
