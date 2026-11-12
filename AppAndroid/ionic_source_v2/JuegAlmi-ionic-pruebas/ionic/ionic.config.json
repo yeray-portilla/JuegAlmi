@@ -1,7 +1,0 @@
-{
-  "name": "juegalmi",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular-standalone"
-}
