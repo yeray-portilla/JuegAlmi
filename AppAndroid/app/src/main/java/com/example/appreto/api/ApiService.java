@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -23,40 +24,24 @@ import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 
-/**
- * Interfaz de Retrofit basada en la API de JuegAlmi.
- * Contiene todas las rutas definidas en ApiController.php
- */
 public interface ApiService {
-
-    // =====================================================================
-    // 1. USUARIOS
-    // =====================================================================
 
     @POST("auth/login")
     Call<LoginResponse> login(@Body JsonObject body);
 
-    // Devuelve el usuario creado (201), SIN token: despues hay que hacer login
     @POST("auth/register")
     Call<User> register(@Body JsonObject body);
 
-    // =====================================================================
-    // 2. CATÁLOGO
-    // =====================================================================
-
     @GET("productos/dispositivos")
-    Call<List<Product>> getDispositivos(@Query("tipo") String tipo); // tipo = "telefono" o "tablet" (o null para ambos)
+    Call<List<Product>> getDispositivos(@Query("tipo") String tipo);
 
     @GET("productos/videojuegos")
     Call<List<Product>> getVideojuegos();
 
     @GET("productos/consolas")
     Call<List<Product>> getConsolas();
-
-    // =====================================================================
-    // 3. COMPRAS Y ALQUILERES
-    // =====================================================================
 
     @POST("operaciones/comprar")
     Call<JsonObject> comprar(@Body JsonObject body);
@@ -70,21 +55,15 @@ public interface ApiService {
     @GET("operaciones/mis-operaciones")
     Call<List<Operacion>> getMisOperaciones();
 
-    // =====================================================================
-    // 4. REPARACIONES - USUARIO
-    // =====================================================================
-
     @GET("soporte/dispositivos")
     Call<List<Aparato>> getMisDispositivos();
 
     @POST("soporte/dispositivos")
     Call<Aparato> crearDispositivoCliente(@Body JsonObject body);
 
-    // Solicitud con foto en Base64 enviando un JSON
     @POST("soporte/solicitudes")
     Call<JsonObject> crearSolicitudJson(@Body JsonObject body);
 
-    // Solicitud enviando formulario Multipart (con archivo físico)
     @Multipart
     @POST("soporte/solicitudes")
     Call<JsonObject> crearSolicitudMultipart(
@@ -99,12 +78,8 @@ public interface ApiService {
     @DELETE("soporte/solicitudes/{id}")
     Call<Void> cancelarSolicitud(@Path("id") int id);
 
-    // =====================================================================
-    // 5. REPARACIONES - ADMINISTRADOR
-    // =====================================================================
-
     @GET("admin/solicitudes")
-    Call<List<SolicitudAdmin>> getSolicitudesAdmin(@Query("estado") String estado); // estado = pendiente, aceptada o rechazada
+    Call<List<SolicitudAdmin>> getSolicitudesAdmin(@Query("estado") String estado);
 
     @PUT("admin/solicitudes/{id}/aceptar")
     Call<JsonObject> aceptarSolicitudAdmin(@Path("id") int id, @Body JsonObject body);
@@ -115,10 +90,6 @@ public interface ApiService {
     @PUT("admin/reparaciones/{id}")
     Call<JsonObject> actualizarReparacionAdmin(@Path("id") int id, @Body JsonObject body);
 
-    // =====================================================================
-    // 6. INFORMACIÓN
-    // =====================================================================
-
     @GET("info/tiendas")
     Call<List<Tienda>> getTiendas();
 
@@ -127,4 +98,7 @@ public interface ApiService {
 
     @GET("info/marcas")
     Call<List<OpcionCombo>> getMarcas();
+
+    @GET
+    Call<ResponseBody> descargarImagen(@Url String url);
 }

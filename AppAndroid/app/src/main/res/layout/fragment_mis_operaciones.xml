@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Mis operaciones: titulo, recargar y tres pestanas (Compras, Alquileres, Mis solicitudes), como en Ionic.
-     Abajo, solo uno visible a la vez: cargando, error + reintentar, lista vacia o la lista. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -35,7 +33,6 @@
             android:src="@drawable/ic_refresh"/>
     </LinearLayout>
 
-    <!-- Mismo estilo de pestanas que en Soporte y Administracion -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_operaciones"
         android:layout_width="match_parent"
@@ -66,7 +63,6 @@
             android:text="Mis solicitudes"/>
     </com.google.android.material.tabs.TabLayout>
 
-    <!-- Estado "cargando" -->
     <ProgressBar
         android:id="@+id/pb_operaciones"
         android:layout_width="wrap_content"
@@ -76,7 +72,6 @@
         android:indeterminateTint="@color/primary"
         android:visibility="gone"/>
 
-    <!-- Estado "error": mensaje y boton Reintentar -->
     <LinearLayout
         android:id="@+id/ll_error_operaciones"
         android:layout_width="match_parent"
@@ -108,7 +103,6 @@
             app:cornerRadius="12dp"/>
     </LinearLayout>
 
-    <!-- Lista vacia, ej. "Todavía no has comprado nada." -->
     <TextView
         android:id="@+id/tv_vacio_operaciones"
         android:layout_width="match_parent"

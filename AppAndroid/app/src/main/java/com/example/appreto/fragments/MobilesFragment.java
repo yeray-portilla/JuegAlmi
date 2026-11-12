@@ -41,12 +41,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Catalogo de la barra de abajo. La misma pantalla sirve para las tres categorias:
- *  - "Dispositivos": moviles y tablets, con filtros Todos / Smartphones / Tablets. Solo se compran.
- *  - "Videojuegos": se compran y se alquilan.
- *  - "Consolas": solo se compran.
- */
 public class MobilesFragment extends Fragment implements MobileAdapter.OnProductClickListener {
 
     public static final String DISPOSITIVOS = "Dispositivos";
@@ -55,12 +49,10 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
 
     private static final String ARG_CATEGORIA = "categoria";
 
-    // Pestanas de filtro (solo en Dispositivos), en el mismo orden que en fragment_mobiles.xml
     private static final int FILTRO_TODOS = 0;
     private static final int FILTRO_SMARTPHONES = 1;
     private static final int FILTRO_TABLETS = 2;
 
-    // Las fechas se manejan como texto "yyyy-MM-dd" (lo que pide la API); asi se pueden comparar como texto
     private final SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
     private String categoria = DISPOSITIVOS;
@@ -73,19 +65,15 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
     private TextView textoVacio;
     private RecyclerView listaProductos;
 
-    // Todos los productos que manda la API, y los que se ven con el filtro elegido
     private final List<Product> todosLosProductos = new ArrayList<>();
     private final List<Product> productosVisibles = new ArrayList<>();
     private MobileAdapter adaptador;
 
-    // true mientras se compra o se alquila (para no mandarlo dos veces)
     private boolean enviando = false;
 
-    // Fechas elegidas en la ventana de alquiler
     private String fechaInicio = "";
     private String fechaFin = "";
 
-    // Crea la pantalla de una categoria (DISPOSITIVOS, VIDEOJUEGOS o CONSOLAS)
     public static MobilesFragment nuevaInstancia(String categoria) {
         MobilesFragment fragment = new MobilesFragment();
         Bundle argumentos = new Bundle();
@@ -94,7 +82,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         return fragment;
     }
 
-    // Crea la vista, prepara la lista y carga los productos
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -124,14 +111,12 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         return vista;
     }
 
-    // Lee la categoria que nos han pasado en nuevaInstancia()
     private void leerCategoria() {
         if (getArguments() != null) {
             categoria = getArguments().getString(ARG_CATEGORIA, DISPOSITIVOS);
         }
     }
 
-    // Titulo de la pagina, igual que en Ionic
     private String obtenerTitulo() {
         if (categoria.equals(VIDEOJUEGOS)) {
             return "Videojuegos";
@@ -142,7 +127,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         return "Móviles";
     }
 
-    // Texto cuando no hay productos
     private String obtenerTextoVacio() {
         if (categoria.equals(VIDEOJUEGOS)) {
             return "No hay videojuegos.";
@@ -153,7 +137,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         return "No hay productos.";
     }
 
-    // Los filtros Todos / Smartphones / Tablets solo salen en Dispositivos
     private void prepararFiltros() {
         if (!categoria.equals(DISPOSITIVOS)) {
             pestanasFiltro.setVisibility(View.GONE);
@@ -176,11 +159,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         });
     }
 
-    // =====================================================================
-    // CARGAR Y MOSTRAR
-    // =====================================================================
-
-    // Pide a la API los productos de la categoria
     private void cargarProductos() {
         mostrarCargando();
 
@@ -189,7 +167,7 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
             @Override
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 if (!isAdded()) {
-                    return; // el usuario ya se fue de esta pantalla
+                    return;
                 }
                 if (response.isSuccessful() && response.body() != null) {
                     guardarProductos(response.body());
@@ -209,7 +187,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         });
     }
 
-    // La ruta de la API depende de la categoria
     private Call<List<Product>> crearPeticionCatalogo() {
         if (categoria.equals(VIDEOJUEGOS)) {
             return api.getVideojuegos();
@@ -217,11 +194,9 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         if (categoria.equals(CONSOLAS)) {
             return api.getConsolas();
         }
-        return api.getDispositivos(null); // null = telefonos y tablets juntos
+        return api.getDispositivos(null);
     }
 
-    // Guarda los productos. A los videojuegos y consolas les ponemos su categoria
-    // (la API no la manda), asi MobileAdapter sabe que solo los videojuegos se alquilan.
     private void guardarProductos(List<Product> productos) {
         todosLosProductos.clear();
         for (Product producto : productos) {
@@ -232,7 +207,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         }
     }
 
-    // Deja en la lista los productos del filtro elegido (Todos, Smartphones o Tablets)
     private void mostrarProductosFiltrados() {
         int filtro = obtenerFiltroElegido();
 
@@ -246,7 +220,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         mostrarListaOVacio();
     }
 
-    // Numero del filtro elegido (en Videojuegos y Consolas no hay filtro: "Todos")
     private int obtenerFiltroElegido() {
         if (!categoria.equals(DISPOSITIVOS) || pestanasFiltro.getSelectedTabPosition() < 0) {
             return FILTRO_TODOS;
@@ -254,7 +227,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         return pestanasFiltro.getSelectedTabPosition();
     }
 
-    // true si el producto se tiene que ver con ese filtro
     private boolean pasaElFiltro(Product producto, int filtro) {
         if (filtro == FILTRO_SMARTPHONES) {
             return "Smartphones".equals(producto.getCategory());
@@ -265,7 +237,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         return true;
     }
 
-    // Muestra la lista (con la animacion de aparicion) o el texto "No hay ..."
     private void mostrarListaOVacio() {
         barraCargando.setVisibility(View.GONE);
         bloqueError.setVisibility(View.GONE);
@@ -276,11 +247,10 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         } else {
             textoVacio.setVisibility(View.GONE);
             listaProductos.setVisibility(View.VISIBLE);
-            listaProductos.scheduleLayoutAnimation(); // las tarjetas aparecen subiendo
+            listaProductos.scheduleLayoutAnimation();
         }
     }
 
-    // Muestra solo la rueda de carga
     private void mostrarCargando() {
         barraCargando.setVisibility(View.VISIBLE);
         bloqueError.setVisibility(View.GONE);
@@ -288,7 +258,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         listaProductos.setVisibility(View.GONE);
     }
 
-    // Muestra solo el mensaje de error con el boton Reintentar
     private void mostrarError(String mensaje) {
         textoError.setText(mensaje);
         barraCargando.setVisibility(View.GONE);
@@ -297,11 +266,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         listaProductos.setVisibility(View.GONE);
     }
 
-    // =====================================================================
-    // COMPRAR
-    // =====================================================================
-
-    // Boton "Comprar" de una tarjeta: pide confirmacion
     @Override
     public void onBuyClick(Product producto) {
         String mensaje = "¿Comprar \"" + producto.getTitle() + "\" por "
@@ -319,7 +283,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
                 .show();
     }
 
-    // La API exige latitud y longitud: si no hay permiso o posicion, LocationHelper devuelve 0 y 0
     private void comprarConUbicacion(Product producto) {
         if (enviando) {
             return;
@@ -338,7 +301,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         });
     }
 
-    // JSON de POST operaciones/comprar: { latitud, longitud, productos: [{id, cantidad}] }
     private JsonObject crearCuerpoCompra(Product producto, double latitud, double longitud) {
         JsonObject lineaCompra = new JsonObject();
         lineaCompra.addProperty("id", producto.getId());
@@ -354,15 +316,10 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         return body;
     }
 
-    // =====================================================================
-    // ALQUILAR (solo videojuegos)
-    // =====================================================================
-
-    // Boton "Alquilar": ventana con las fechas. Por defecto, de hoy a dentro de 7 dias (como en Ionic).
     @Override
     public void onRentClick(Product producto) {
         if (!MobileAdapter.esAlquilable(producto)) {
-            return; // las consolas y los moviles solo se compran
+            return;
         }
         View vistaDialogo = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_rent, null);
         TextView textoNombre = vistaDialogo.findViewById(R.id.tv_game_name);
@@ -389,14 +346,12 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         dialogo.show();
     }
 
-    // "4 €/día · 20 €/semana · 60 €/mes"
     private String crearTextoPreciosAlquiler(Product producto) {
         return PrecioHelper.formatearPrecio(producto.getPrecioDiario()) + "/día · "
                 + PrecioHelper.formatearPrecio(producto.getPrecioSemanal()) + "/semana · "
                 + PrecioHelper.formatearPrecio(producto.getPrecioMensual()) + "/mes";
     }
 
-    // Abre el calendario. No deja elegir dias anteriores a hoy (ni, para el fin, anteriores al inicio).
     private void elegirFecha(boolean esInicio, Button boton) {
         String fechaYaElegida = fechaFin;
         if (esInicio) {
@@ -423,7 +378,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         calendario.show();
     }
 
-    // Guarda la fecha elegida y la escribe en su boton
     private void guardarFechaElegida(boolean esInicio, String fecha, Button boton) {
         if (esInicio) {
             fechaInicio = fecha;
@@ -434,7 +388,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         }
     }
 
-    // Comprueba las fechas y, si estan bien, cierra la ventana y alquila
     private void confirmarAlquiler(Product producto, AlertDialog dialogo, TextView textoErrorFechas) {
         String error = comprobarFechas();
         if (error != null) {
@@ -446,7 +399,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         alquilarConUbicacion(producto);
     }
 
-    // Devuelve el error de las fechas, o null si estan bien. Las fechas "yyyy-MM-dd" se comparan como texto.
     private String comprobarFechas() {
         if (fechaInicio.isEmpty() || fechaFin.isEmpty()) {
             return "Elige las dos fechas.";
@@ -460,7 +412,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         return null;
     }
 
-    // Pide la ubicacion (0 y 0 si no hay) y manda el alquiler
     private void alquilarConUbicacion(Product producto) {
         if (enviando) {
             return;
@@ -479,7 +430,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         });
     }
 
-    // JSON de POST operaciones/alquilar: { fecha_inicio, fecha_fin, latitud, longitud, videojuegos: [{id}] }
     private JsonObject crearCuerpoAlquiler(Product producto, double latitud, double longitud) {
         JsonObject juego = new JsonObject();
         juego.addProperty("id", producto.getId());
@@ -496,11 +446,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         return body;
     }
 
-    // =====================================================================
-    // AYUDAS
-    // =====================================================================
-
-    // Manda una compra o un alquiler. Si va bien, avisa con el total y recarga (cambia el stock).
     private void enviarOperacion(Call<JsonObject> peticion, String mensajeOk) {
         peticion.enqueue(new Callback<JsonObject>() {
             @Override
@@ -529,25 +474,21 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         });
     }
 
-    // Hoy como texto "yyyy-MM-dd"
     private String obtenerHoy() {
         return formatoFecha.format(Calendar.getInstance().getTime());
     }
 
-    // Hoy + N dias como texto "yyyy-MM-dd"
     private String obtenerDentroDeDias(int dias) {
         Calendar fecha = Calendar.getInstance();
         fecha.add(Calendar.DAY_OF_MONTH, dias);
         return formatoFecha.format(fecha.getTime());
     }
 
-    // Convierte "yyyy-MM-dd" a Calendar (a las 00:00). Si el texto esta mal, devuelve hoy.
     private Calendar convertirACalendar(String fecha) {
         Calendar calendario = Calendar.getInstance();
         try {
             calendario.setTime(formatoFecha.parse(fecha));
         } catch (Exception e) {
-            // texto vacio o mal escrito: nos quedamos con hoy
         }
         calendario.set(Calendar.HOUR_OF_DAY, 0);
         calendario.set(Calendar.MINUTE, 0);
@@ -556,7 +497,6 @@ public class MobilesFragment extends Fragment implements MobileAdapter.OnProduct
         return calendario;
     }
 
-    // Mensaje corto abajo de la pantalla
     private void mostrarAviso(String mensaje) {
         Toast.makeText(requireContext(), mensaje, Toast.LENGTH_LONG).show();
     }

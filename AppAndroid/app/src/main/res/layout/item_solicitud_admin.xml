@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Tarjeta de una solicitud de reparacion en la pantalla de Administracion -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -18,7 +17,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Foto del aparato (solo si el cliente hizo una) -->
         <ImageView
             android:id="@+id/iv_foto_solicitud"
             android:layout_width="match_parent"
@@ -65,7 +63,6 @@
             android:textSize="14sp"
             tools:text="La consola no enciende"/>
 
-        <!-- Ubicacion del cliente: si la compartio, al pulsar se abre en el mapa -->
         <TextView
             android:id="@+id/tv_ubicacion_solicitud"
             android:layout_width="match_parent"
@@ -85,7 +82,6 @@
             android:visibility="gone"
             tools:text="Motivo: no hay recambios"/>
 
-        <!-- Datos de la reparacion (solo en las aceptadas) -->
         <TextView
             android:id="@+id/tv_reparacion_solicitud"
             android:layout_width="match_parent"
@@ -107,7 +103,6 @@
             android:visibility="gone"
             tools:text="Reparada · 55.0 €"/>
 
-        <!-- Botones: Aceptar / Rechazar (pendientes) o Marcar completada (aceptadas) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

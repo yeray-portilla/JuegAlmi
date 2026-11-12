@@ -30,15 +30,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-// Pantalla de registro. Igual que la de Ionic (registro.page.ts):
-// 1) POST auth/register   2) como no devuelve token, hace login con los mismos datos.
 public class RegistroFragment extends Fragment {
 
-    // Limites: el maximo del usuario es el de la columna; el minimo de la contrasena lo exige la API
     private static final int MAX_USUARIO = 180;
     private static final int MIN_PASSWORD = 6;
 
-    // TextInputLayout = el recuadro (ahi se pone el mensaje de error); TextInputEditText = donde se escribe
     private TextInputLayout tilNombre;
     private TextInputLayout tilEmail;
     private TextInputLayout tilPassword;
@@ -49,7 +45,6 @@ public class RegistroFragment extends Fragment {
     private TextInputEditText etRepetir;
     private MaterialButton btnCrearCuenta;
 
-    // Crea la vista y conecta los botones
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -73,7 +68,6 @@ public class RegistroFragment extends Fragment {
         return view;
     }
 
-    // La tecla "Hecho" del teclado en el ultimo campo hace lo mismo que pulsar "Crear cuenta"
     private void activarTeclaHecho() {
         etRepetir.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -87,7 +81,6 @@ public class RegistroFragment extends Fragment {
         });
     }
 
-    // El boton "atras" del movil vuelve al login en vez de cerrar la app
     private void activarBotonAtras() {
         OnBackPressedCallback alPulsarAtras = new OnBackPressedCallback(true) {
             @Override
@@ -98,7 +91,6 @@ public class RegistroFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), alPulsarAtras);
     }
 
-    // Lee el texto de un campo (nunca devuelve null)
     private String leerTexto(TextInputEditText campo) {
         if (campo.getText() == null) {
             return "";
@@ -106,11 +98,10 @@ public class RegistroFragment extends Fragment {
         return campo.getText().toString();
     }
 
-    // Valida el formulario y, si esta bien, crea la cuenta
     private void crearCuenta() {
         String nombre = leerTexto(etNombre).trim();
         String email = leerTexto(etEmail).trim();
-        String password = leerTexto(etPassword); // la contrasena no se recorta, igual que en Ionic
+        String password = leerTexto(etPassword);
         String repetir = leerTexto(etRepetir);
 
         if (!validarFormulario(nombre, email, password, repetir)) {
@@ -119,7 +110,6 @@ public class RegistroFragment extends Fragment {
         registrarUsuario(nombre, email, password);
     }
 
-    // Comprueba los cuatro campos. Se comprueban todos para que se vean todos los errores a la vez.
     private boolean validarFormulario(String nombre, String email, String password, String repetir) {
         boolean nombreBien = validarNombre(nombre);
         boolean emailBien = validarEmail(email);
@@ -128,7 +118,6 @@ public class RegistroFragment extends Fragment {
         return nombreBien && emailBien && passwordBien && repetirBien;
     }
 
-    // Nombre obligatorio y como mucho 180 caracteres
     private boolean validarNombre(String nombre) {
         if (nombre.isEmpty()) {
             tilNombre.setError("Escribe un nombre de usuario.");
@@ -142,7 +131,6 @@ public class RegistroFragment extends Fragment {
         return true;
     }
 
-    // Email obligatorio y con formato valido (algo@algo.algo)
     private boolean validarEmail(String email) {
         if (email.isEmpty()) {
             tilEmail.setError("Escribe tu correo.");
@@ -156,7 +144,6 @@ public class RegistroFragment extends Fragment {
         return true;
     }
 
-    // Contrasena de al menos 6 caracteres
     private boolean validarPassword(String password) {
         if (password.length() < MIN_PASSWORD) {
             tilPassword.setError("La contraseña debe tener al menos " + MIN_PASSWORD + " caracteres.");
@@ -166,7 +153,6 @@ public class RegistroFragment extends Fragment {
         return true;
     }
 
-    // Las dos contrasenas tienen que ser iguales
     private boolean validarRepetir(String password, String repetir) {
         if (!repetir.equals(password)) {
             tilRepetir.setError("Las contraseñas no coinciden.");
@@ -176,7 +162,6 @@ public class RegistroFragment extends Fragment {
         return true;
     }
 
-    // Paso 1: POST auth/register. Si va bien, pasamos al login automatico.
     private void registrarUsuario(String nombre, String email, String password) {
         ponerCargando(true);
 
@@ -190,12 +175,11 @@ public class RegistroFragment extends Fragment {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (!isAdded()) {
-                    return; // el usuario ya se fue de esta pantalla
+                    return;
                 }
                 if (response.isSuccessful()) {
                     iniciarSesion(nombre, password);
                 } else {
-                    // 400 datos mal, 409 ya existe... mostramos el mensaje de la API
                     String mensaje = RetrofitClient.leerMensajeError(response, "No se pudo crear la cuenta.");
                     Toast.makeText(requireContext(), mensaje, Toast.LENGTH_LONG).show();
                     ponerCargando(false);
@@ -213,7 +197,6 @@ public class RegistroFragment extends Fragment {
         });
     }
 
-    // Paso 2: login con los datos recien registrados (el registro no devuelve token)
     private void iniciarSesion(String nombre, String password) {
         JsonObject body = new JsonObject();
         body.addProperty("login", nombre);
@@ -245,7 +228,6 @@ public class RegistroFragment extends Fragment {
         });
     }
 
-    // Da la bienvenida y avisa a MainActivity de que ya hay sesion (muestra el catalogo)
     private void entrarEnLaApp(String nombre) {
         Toast.makeText(requireContext(), "¡Bienvenido, " + nombre + "!", Toast.LENGTH_SHORT).show();
         if (getActivity() instanceof MainActivity) {
@@ -253,14 +235,12 @@ public class RegistroFragment extends Fragment {
         }
     }
 
-    // La cuenta ya existe pero no se pudo entrar: que lo intente desde el login
     private void avisarCuentaCreadaSinLogin() {
         Toast.makeText(requireContext(), "Cuenta creada, pero no se pudo iniciar sesión. Entra desde el login.",
                 Toast.LENGTH_LONG).show();
         irALogin();
     }
 
-    // Mientras se espera a la API: boton desactivado y con el texto "Creando cuenta..."
     private void ponerCargando(boolean cargando) {
         btnCrearCuenta.setEnabled(!cargando);
         if (cargando) {
@@ -270,7 +250,6 @@ public class RegistroFragment extends Fragment {
         }
     }
 
-    // Vuelve a la pantalla de login
     private void irALogin() {
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).mostrarLogin();

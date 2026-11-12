@@ -28,14 +28,12 @@ public class SharedPrefManager {
         return instance;
     }
 
-    // Guarda los datos del usuario tras el login. Los roles vienen de la API (ej. ["ROLE_USER", "ROLE_ADMIN"])
     public void saveUser(String token, String username, String email, List<String> roles) {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(KEY_TOKEN, token);
         editor.putString(KEY_USERNAME, username);
         editor.putString(KEY_EMAIL, email);
-        // SharedPreferences no guarda listas, pero si conjuntos de textos
         Set<String> conjuntoRoles = new HashSet<>();
         if (roles != null) {
             conjuntoRoles.addAll(roles);
@@ -59,13 +57,11 @@ public class SharedPrefManager {
         return sharedPreferences.getString(KEY_EMAIL, "email@ejemplo.com");
     }
 
-    // Devuelve los roles guardados (vacio si no hay sesion)
     public Set<String> obtenerRoles() {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getStringSet(KEY_ROLES, new HashSet<>());
     }
 
-    // true si el usuario logueado es administrador
     public boolean esAdmin() {
         return obtenerRoles().contains("ROLE_ADMIN");
     }

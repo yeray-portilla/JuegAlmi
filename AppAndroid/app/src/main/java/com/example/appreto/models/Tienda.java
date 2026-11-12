@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-// Una tienda tal como la devuelve GET info/tiendas
 public class Tienda {
     @SerializedName("id")
     private int id;
@@ -15,7 +14,6 @@ public class Tienda {
     @SerializedName("direccion")
     private String direccion;
 
-    // Puede venir a null si la tienda todavia no tiene historia
     @SerializedName("historia")
     private String historia;
 
@@ -25,11 +23,9 @@ public class Tienda {
     @SerializedName("longitud")
     private double longitud;
 
-    // Lista de URLs de las fotos de la tienda
     @SerializedName("fotos")
     private List<String> fotos;
 
-    // Departamentos que repara la tienda: [{id, nombre}] (Consolas, Moviles, Tablets)
     @SerializedName("departamentos")
     private List<OpcionCombo> departamentos;
 
@@ -40,7 +36,6 @@ public class Tienda {
     public double getLatitud() { return latitud; }
     public double getLongitud() { return longitud; }
 
-    // Devuelve las fotos (lista vacia si la API no manda ninguna, asi nunca es null)
     public List<String> getFotos() {
         if (fotos == null) {
             return new ArrayList<>();
@@ -48,7 +43,6 @@ public class Tienda {
         return fotos;
     }
 
-    // Devuelve los departamentos (lista vacia si la API no manda ninguno)
     public List<OpcionCombo> getDepartamentos() {
         if (departamentos == null) {
             return new ArrayList<>();
@@ -56,7 +50,6 @@ public class Tienda {
         return departamentos;
     }
 
-    // Nombres de los departamentos separados por comas, ej. "Consolas, Moviles"
     public String getNombresDepartamentos() {
         StringBuilder texto = new StringBuilder();
         for (OpcionCombo departamento : getDepartamentos()) {

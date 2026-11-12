@@ -39,19 +39,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Pantalla de Administracion (solo la ve el administrador, ver MainActivity).
- * Lista las solicitudes de reparacion por estado (pendiente, aceptada, rechazada) y permite:
- *  - Aceptar una pendiente (pide el precio estimado, > 0). La API crea la reparacion.
- *  - Rechazar una pendiente (pide el motivo).
- *  - Marcar completada la reparacion de una aceptada (pide el precio final, >= 0).
- */
 public class AdminFragment extends Fragment implements SolicitudAdminAdapter.AccionesSolicitud {
 
-    // Estado que pide cada pestana, en el mismo orden que en fragment_admin.xml
     private static final String[] ESTADOS = {"pendiente", "aceptada", "rechazada"};
 
-    // Lo que hay que hacer con el texto que el administrador escribe en un dialogo
     private interface AlEscribirDato {
         void datoEscrito(String texto);
     }
@@ -67,10 +58,8 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
     private final List<SolicitudAdmin> solicitudes = new ArrayList<>();
     private SolicitudAdminAdapter adaptador;
 
-    // true mientras se espera la respuesta de aceptar/rechazar/completar (para no mandarlo dos veces)
     private boolean enviando = false;
 
-    // Crea la vista, conecta pestanas y botones y carga las pendientes
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -96,7 +85,6 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
         return vista;
     }
 
-    // Al cambiar de pestana se cargan las solicitudes de ese estado
     private void escucharCambioDePestana() {
         pestanasEstado.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -114,7 +102,6 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
         });
     }
 
-    // Estado de la pestana elegida ("pendiente", "aceptada" o "rechazada")
     private String obtenerEstadoElegido() {
         int posicion = pestanasEstado.getSelectedTabPosition();
         if (posicion < 0) {
@@ -123,11 +110,6 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
         return ESTADOS[posicion];
     }
 
-    // =====================================================================
-    // CARGAR LA LISTA
-    // =====================================================================
-
-    // GET admin/solicitudes?estado=... (403 si el usuario no es administrador)
     private void cargarSolicitudes() {
         mostrarCargando();
         String estado = obtenerEstadoElegido();
@@ -136,7 +118,7 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
             @Override
             public void onResponse(Call<List<SolicitudAdmin>> call, Response<List<SolicitudAdmin>> response) {
                 if (!isAdded()) {
-                    return; // el usuario ya se fue de esta pantalla
+                    return;
                 }
                 if (response.isSuccessful() && response.body() != null) {
                     mostrarSolicitudes(response.body(), estado);
@@ -156,7 +138,6 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
         });
     }
 
-    // Pone la lista nueva en pantalla (o el aviso "No hay solicitudes ...")
     private void mostrarSolicitudes(List<SolicitudAdmin> nuevas, String estado) {
         solicitudes.clear();
         solicitudes.addAll(nuevas);
@@ -171,11 +152,10 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
         } else {
             textoVacio.setVisibility(View.GONE);
             listaSolicitudes.setVisibility(View.VISIBLE);
-            listaSolicitudes.scheduleLayoutAnimation(); // las tarjetas aparecen subiendo
+            listaSolicitudes.scheduleLayoutAnimation();
         }
     }
 
-    // Muestra solo la rueda de carga
     private void mostrarCargando() {
         barraCargando.setVisibility(View.VISIBLE);
         bloqueError.setVisibility(View.GONE);
@@ -183,7 +163,6 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
         listaSolicitudes.setVisibility(View.GONE);
     }
 
-    // Muestra solo el mensaje de error con el boton Reintentar
     private void mostrarError(String mensaje) {
         textoError.setText(mensaje);
         barraCargando.setVisibility(View.GONE);
@@ -192,11 +171,6 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
         listaSolicitudes.setVisibility(View.GONE);
     }
 
-    // =====================================================================
-    // ACCIONES (las llama SolicitudAdminAdapter al pulsar los botones)
-    // =====================================================================
-
-    // Aceptar: pide el precio estimado (mayor que 0) y llama a PUT admin/solicitudes/{id}/aceptar
     @Override
     public void aceptar(SolicitudAdmin solicitud) {
         String mensaje = "Precio estimado para \"" + solicitud.getDispositivo() + "\" (€):";
@@ -215,7 +189,6 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
         });
     }
 
-    // Rechazar: pide el motivo (obligatorio) y llama a PUT admin/solicitudes/{id}/rechazar
     @Override
     public void rechazar(SolicitudAdmin solicitud) {
         String mensaje = "Motivo del rechazo para \"" + solicitud.getDispositivo() + "\":";
@@ -235,7 +208,6 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
                 });
     }
 
-    // Completar: pide el precio final (0 o mas: 0 = garantia) y llama a PUT admin/reparaciones/{id}
     @Override
     public void completar(SolicitudAdmin solicitud) {
         if (solicitud.getReparacionId() == null) {
@@ -259,10 +231,8 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
         });
     }
 
-    // Abre la ubicacion del cliente en Google Maps (o en el navegador)
     @Override
     public void verUbicacion(SolicitudAdmin solicitud) {
-        // Locale.US para que los decimales salgan con punto (36.84) y no con coma
         String url = String.format(Locale.US, "https://www.google.com/maps?q=%f,%f",
                 solicitud.getLatitud(), solicitud.getLongitud());
         try {
@@ -272,11 +242,6 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
         }
     }
 
-    // =====================================================================
-    // AYUDAS
-    // =====================================================================
-
-    // Dialogo con un mensaje y un campo de texto. Al pulsar el boton de aceptar, pasa el texto a "alEscribir".
     private void pedirDato(String titulo, String mensaje, String pista, boolean esPrecio,
                            String textoBoton, AlEscribirDato alEscribir) {
         View vistaDialogo = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_pedir_dato, null);
@@ -310,7 +275,6 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
                 .show();
     }
 
-    // Convierte el texto en un precio. Acepta coma o punto decimal ("55,5" o "55.5"). Devuelve null si no es un numero.
     private Double leerPrecio(String texto) {
         String limpio = texto.trim().replace(',', '.');
         if (limpio.isEmpty()) {
@@ -323,10 +287,9 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
         }
     }
 
-    // Manda una accion a la API. Si va bien muestra "mensajeOk"; si no, el error de la API. Despues recarga la lista.
     private void enviar(Call<JsonObject> peticion, String mensajeOk) {
         if (enviando) {
-            return; // ya hay una accion en marcha
+            return;
         }
         enviando = true;
 
@@ -340,7 +303,6 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
                 if (response.isSuccessful()) {
                     mostrarAviso(mensajeOk);
                 } else {
-                    // 409 = otro admin ya la cambio; 400 = dato no valido...
                     mostrarAviso(RetrofitClient.leerMensajeError(response, "No se pudo guardar."));
                 }
                 cargarSolicitudes();
@@ -357,7 +319,6 @@ public class AdminFragment extends Fragment implements SolicitudAdminAdapter.Acc
         });
     }
 
-    // Mensaje corto abajo de la pantalla
     private void mostrarAviso(String mensaje) {
         Toast.makeText(requireContext(), mensaje, Toast.LENGTH_LONG).show();
     }

@@ -17,11 +17,8 @@ import com.example.appreto.models.SolicitudAdmin;
 
 import java.util.List;
 
-// Lista de solicitudes de reparacion de la pantalla de Administracion.
-// Solo pinta las tarjetas; lo que hace cada boton lo decide AdminFragment (interfaz AccionesSolicitud).
 public class SolicitudAdminAdapter extends RecyclerView.Adapter<SolicitudAdminAdapter.SolicitudViewHolder> {
 
-    // Lo que puede hacer el administrador con una solicitud
     public interface AccionesSolicitud {
         void aceptar(SolicitudAdmin solicitud);
         void rechazar(SolicitudAdmin solicitud);
@@ -37,7 +34,6 @@ public class SolicitudAdminAdapter extends RecyclerView.Adapter<SolicitudAdminAd
         this.acciones = acciones;
     }
 
-    // Crea la tarjeta de una solicitud (item_solicitud_admin.xml)
     @NonNull
     @Override
     public SolicitudViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -45,7 +41,6 @@ public class SolicitudAdminAdapter extends RecyclerView.Adapter<SolicitudAdminAd
         return new SolicitudViewHolder(vista);
     }
 
-    // Rellena la tarjeta con los datos de la solicitud
     @Override
     public void onBindViewHolder(@NonNull SolicitudViewHolder holder, int position) {
         SolicitudAdmin solicitud = solicitudes.get(position);
@@ -62,11 +57,10 @@ public class SolicitudAdminAdapter extends RecyclerView.Adapter<SolicitudAdminAd
         mostrarBotones(holder, solicitud);
     }
 
-    // Foto del aparato con Glide. Si la solicitud no tiene foto, no se ve la imagen.
     private void cargarFoto(ImageView imagen, SolicitudAdmin solicitud) {
         String urlFoto = RetrofitClient.construirUrlFoto(solicitud.getUrlFoto());
         if (urlFoto == null) {
-            Glide.with(imagen).clear(imagen); // por si esta tarjeta se reutiliza y tenia la foto de otra
+            Glide.with(imagen).clear(imagen);
             imagen.setVisibility(View.GONE);
             return;
         }
@@ -78,7 +72,6 @@ public class SolicitudAdminAdapter extends RecyclerView.Adapter<SolicitudAdminAd
                 .into(imagen);
     }
 
-    // "Ubicación: lat, lon" en ambar y pulsable (abre el mapa), o "no compartida" si el cliente no dio permiso
     private void mostrarUbicacion(TextView texto, SolicitudAdmin solicitud) {
         if (solicitud.tieneUbicacion()) {
             texto.setText("Ubicación: " + solicitud.getLatitud() + ", " + solicitud.getLongitud());
@@ -91,7 +84,6 @@ public class SolicitudAdminAdapter extends RecyclerView.Adapter<SolicitudAdminAd
         }
     }
 
-    // Motivo del rechazo (solo en las rechazadas que lo tienen)
     private void mostrarMotivoRechazo(TextView texto, SolicitudAdmin solicitud) {
         boolean rechazada = "rechazada".equals(solicitud.getEstado());
         if (rechazada && solicitud.getMotivoRechazo() != null) {
@@ -102,7 +94,6 @@ public class SolicitudAdminAdapter extends RecyclerView.Adapter<SolicitudAdminAd
         }
     }
 
-    // En las aceptadas: "Reparación #N · estimado X €" y, si ya esta terminada, "Reparada · X €"
     private void mostrarDatosReparacion(SolicitudViewHolder holder, SolicitudAdmin solicitud) {
         if (!tieneReparacion(solicitud)) {
             holder.textoReparacion.setVisibility(View.GONE);
@@ -129,7 +120,6 @@ public class SolicitudAdminAdapter extends RecyclerView.Adapter<SolicitudAdminAd
         }
     }
 
-    // Pendiente: Aceptar y Rechazar. Aceptada sin terminar: Marcar completada. El resto: sin botones.
     private void mostrarBotones(SolicitudViewHolder holder, SolicitudAdmin solicitud) {
         boolean pendiente = "pendiente".equals(solicitud.getEstado());
         boolean sePuedeCompletar = tieneReparacion(solicitud) && !solicitud.estaCompletada();
@@ -143,12 +133,10 @@ public class SolicitudAdminAdapter extends RecyclerView.Adapter<SolicitudAdminAd
         holder.botonCompletar.setOnClickListener(v -> acciones.completar(solicitud));
     }
 
-    // true si la solicitud esta aceptada y ya tiene su reparacion creada
     private boolean tieneReparacion(SolicitudAdmin solicitud) {
         return "aceptada".equals(solicitud.getEstado()) && solicitud.getReparacionId() != null;
     }
 
-    // Muestra la vista si "mostrar" es true y la oculta si es false
     private void mostrarSiOcultar(View vista, boolean mostrar) {
         if (mostrar) {
             vista.setVisibility(View.VISIBLE);

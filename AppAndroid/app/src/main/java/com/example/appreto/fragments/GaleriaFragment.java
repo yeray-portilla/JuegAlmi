@@ -13,10 +13,8 @@ import com.example.appreto.models.Tienda;
 
 import java.util.List;
 
-// Pantalla Galeria (menu lateral): por cada tienda, sus fotos en una fila que se desliza en horizontal
 public class GaleriaFragment extends TiendasBaseFragment {
 
-    // Mete la fila de fotos (o el aviso "No hay fotos") dentro de la tarjeta de la tienda
     @Override
     protected void anadirContenido(Tienda tienda, View tarjeta, LinearLayout contenido) {
         List<String> fotos = tienda.getFotos();
@@ -37,7 +35,6 @@ public class GaleriaFragment extends TiendasBaseFragment {
         contenido.addView(filaFotos);
     }
 
-    // Crea una foto de la galeria y la descarga con Glide (si falla se ve el icono de respaldo)
     private ImageView crearImagen(LinearLayout contenedorFotos, String foto, String nombreTienda) {
         ImageView imagen = (ImageView) LayoutInflater.from(requireContext())
                 .inflate(R.layout.item_foto_galeria, contenedorFotos, false);
@@ -53,7 +50,6 @@ public class GaleriaFragment extends TiendasBaseFragment {
         return imagen;
     }
 
-    // Texto que se ve cuando la tienda no tiene fotos
     private void mostrarSinFotos(LinearLayout contenido) {
         TextView textoSinFotos = new TextView(requireContext());
         textoSinFotos.setText("No hay fotos de esta tienda.");

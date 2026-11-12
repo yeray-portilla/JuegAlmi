@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Animacion de una tarjeta al aparecer: sube un poco (12dp) y pasa de transparente a visible.
-     Es la misma que la de la app Ionic (@keyframes aparecer, 0.35 s). -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:duration="350"
     android:interpolator="@android:anim/decelerate_interpolator">

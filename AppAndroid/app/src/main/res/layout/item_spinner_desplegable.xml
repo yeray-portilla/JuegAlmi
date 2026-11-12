@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Cada opcion de la lista que se abre al pulsar un Spinner: texto blanco sobre el fondo de ventana (#131A33) -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/text1"
     android:layout_width="match_parent"

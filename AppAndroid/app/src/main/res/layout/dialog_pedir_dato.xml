@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Contenido de los dialogos de Administracion que piden un dato: precio estimado, precio final o motivo.
-     AdminFragment pone el mensaje, la pista y el tipo de teclado. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Tarjeta de una tienda. La parte de abajo (ll_contenido_tienda) la rellena cada pantalla:
-     Historia el texto, Ubicacion el mapa y Galeria las fotos. -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -35,7 +33,6 @@
                 android:textStyle="bold"
                 tools:text="JuegAlmi Centro"/>
 
-            <!-- Solo se ve en Ubicacion, cuando sabemos donde esta el usuario -->
             <TextView
                 android:id="@+id/tv_distancia_tienda"
                 android:layout_width="wrap_content"

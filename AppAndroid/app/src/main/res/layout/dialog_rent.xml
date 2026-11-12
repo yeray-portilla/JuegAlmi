@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Ventana para alquilar un videojuego: nombre, precios, fecha de inicio y de fin (como el modal de Ionic).
-     El fondo lo pone el tema de los dialogos (ThemeOverlay.App.Dialogo). -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -26,7 +24,6 @@
         android:textStyle="bold"
         android:textSize="17sp"/>
 
-    <!-- "4 €/día · 20 €/semana · 60 €/mes" -->
     <TextView
         android:id="@+id/tv_game_prices"
         android:layout_width="match_parent"
@@ -56,7 +53,6 @@
         app:cornerRadius="12dp"
         android:textAllCaps="false"/>
 
-    <!-- Error de las fechas, ej. "La fecha de fin no puede ser anterior a la de inicio." -->
     <TextView
         android:id="@+id/tv_error_fechas"
         android:layout_width="match_parent"

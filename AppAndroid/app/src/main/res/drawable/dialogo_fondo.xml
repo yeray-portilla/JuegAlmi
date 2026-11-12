@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Fondo de los dialogos: rectangulo redondeado con el color de las ventanas, separado del borde de la pantalla -->
 <inset xmlns:android="http://schemas.android.com/apk/res/android"
     android:insetLeft="24dp"
     android:insetRight="24dp"

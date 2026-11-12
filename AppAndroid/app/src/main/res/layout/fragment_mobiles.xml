@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Catalogo (Dispositivos, Videojuegos o Consolas): titulo, recargar, filtros (solo en Dispositivos)
-     y, solo uno visible a la vez: cargando, error + reintentar, lista vacia o la lista de productos. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -17,7 +15,6 @@
         android:paddingTop="16dp"
         android:paddingEnd="16dp">
 
-        <!-- "Móviles", "Videojuegos" o "Consolas" (como el titulo de cada pagina de Ionic) -->
         <TextView
             android:id="@+id/tv_titulo_catalogo"
             android:layout_width="0dp"
@@ -67,7 +64,6 @@
 
     </com.google.android.material.tabs.TabLayout>
 
-    <!-- Estado "cargando" -->
     <ProgressBar
         android:id="@+id/pb_catalogo"
         android:layout_width="wrap_content"
@@ -77,7 +73,6 @@
         android:indeterminateTint="@color/primary"
         android:visibility="gone"/>
 
-    <!-- Estado "error": mensaje y boton Reintentar -->
     <LinearLayout
         android:id="@+id/ll_error_catalogo"
         android:layout_width="match_parent"
@@ -109,7 +104,6 @@
             app:cornerRadius="12dp"/>
     </LinearLayout>
 
-    <!-- Lista vacia, ej. "No hay consolas." -->
     <TextView
         android:id="@+id/tv_vacio_catalogo"
         android:layout_width="match_parent"

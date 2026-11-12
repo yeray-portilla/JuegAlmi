@@ -13,10 +13,8 @@ import com.example.appreto.models.Aparato;
 
 import java.util.List;
 
-// Lista de "Mis aparatos" en Soporte. Cada tarjeta tiene el boton "Pedir reparacion".
 public class AparatoAdapter extends RecyclerView.Adapter<AparatoAdapter.AparatoViewHolder> {
 
-    // Lo que pasa al pulsar "Pedir reparacion" en un aparato (lo decide SupportFragment)
     public interface AlPedirReparacion {
         void pedirReparacion(Aparato aparato);
     }
@@ -29,7 +27,6 @@ public class AparatoAdapter extends RecyclerView.Adapter<AparatoAdapter.AparatoV
         this.alPedirReparacion = alPedirReparacion;
     }
 
-    // Crea la tarjeta de un aparato (item_aparato.xml)
     @NonNull
     @Override
     public AparatoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -37,7 +34,6 @@ public class AparatoAdapter extends RecyclerView.Adapter<AparatoAdapter.AparatoV
         return new AparatoViewHolder(vista);
     }
 
-    // Rellena la tarjeta: nombre, tipo y boton
     @Override
     public void onBindViewHolder(@NonNull AparatoViewHolder holder, int position) {
         Aparato aparato = aparatos.get(position);

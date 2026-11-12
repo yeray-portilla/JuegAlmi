@@ -1,5 +1,6 @@
 package com.example.appreto.fragments;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,18 +19,12 @@ import com.example.appreto.api.ApiService;
 import com.example.appreto.api.RetrofitClient;
 import com.example.appreto.models.Tienda;
 
+import java.io.IOException;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Parte comun de las pantallas Historia, Ubicacion y Galeria.
- * Esta clase pide las tiendas a la API y se encarga de los estados "cargando", "error + reintentar" y "recargar".
- * Por cada tienda crea una tarjeta (item_tienda.xml) con nombre, direccion y departamentos.
- * Cada pantalla hija solo tiene que decir que se pone dentro de la tarjeta (metodo anadirContenido).
- */
+@SuppressWarnings("deprecation")
 public abstract class TiendasBaseFragment extends Fragment {
 
     private ProgressBar barraCargando;
@@ -38,14 +33,13 @@ public abstract class TiendasBaseFragment extends Fragment {
     private ScrollView scrollTiendas;
     protected LinearLayout listaTiendas;
 
-    // Cada pantalla hija rellena la parte de abajo de la tarjeta de una tienda
+    private CargarTiendasTask tareaCarga;
+
     protected abstract void anadirContenido(Tienda tienda, View tarjeta, LinearLayout contenido);
 
-    // Se llama despues de pintar todas las tarjetas. Por defecto no hace nada (Ubicacion lo usa para la distancia).
     protected void alTerminarDePintar(List<Tienda> tiendas) {
     }
 
-    // Crea la vista y empieza a cargar las tiendas
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -57,7 +51,6 @@ public abstract class TiendasBaseFragment extends Fragment {
         scrollTiendas = vista.findViewById(R.id.sv_tiendas);
         listaTiendas = vista.findViewById(R.id.ll_lista_tiendas);
 
-        // Reintentar (tras un error) y Recargar (arriba a la derecha) hacen lo mismo: volver a pedir las tiendas
         vista.findViewById(R.id.btn_reintentar_tiendas).setOnClickListener(v -> cargarTiendas());
         vista.findViewById(R.id.btn_recargar_tiendas).setOnClickListener(v -> cargarTiendas());
 
@@ -65,36 +58,79 @@ public abstract class TiendasBaseFragment extends Fragment {
         return vista;
     }
 
-    // Pide GET info/tiendas a la API
-    protected void cargarTiendas() {
-        mostrarCargando();
-
-        ApiService api = RetrofitClient.getApiService(requireContext());
-        api.getTiendas().enqueue(new Callback<List<Tienda>>() {
-            @Override
-            public void onResponse(Call<List<Tienda>> call, Response<List<Tienda>> response) {
-                if (!isAdded()) {
-                    return; // el usuario ya se fue de esta pantalla
-                }
-                if (response.isSuccessful() && response.body() != null) {
-                    pintarTiendas(response.body());
-                } else {
-                    String mensaje = RetrofitClient.leerMensajeError(response, "No se pudieron cargar las tiendas.");
-                    mostrarError(mensaje);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Tienda>> call, Throwable t) {
-                if (!isAdded()) {
-                    return;
-                }
-                mostrarError("No se pudo conectar con el servidor.");
-            }
-        });
+    @Override
+    public void onDestroyView() {
+        cancelarCarga();
+        super.onDestroyView();
     }
 
-    // Borra las tarjetas que hubiera y crea una nueva por cada tienda
+    protected void cargarTiendas() {
+        cancelarCarga();
+        ApiService apiService = RetrofitClient.getApiService(requireContext());
+        tareaCarga = new CargarTiendasTask(apiService);
+        tareaCarga.execute();
+    }
+
+    private void cancelarCarga() {
+        if (tareaCarga != null) {
+            tareaCarga.cancel(true);
+            tareaCarga = null;
+        }
+    }
+
+    private static class ResultadoTiendas {
+        List<Tienda> tiendas;
+        String mensajeError;
+
+        ResultadoTiendas(List<Tienda> tiendas, String mensajeError) {
+            this.tiendas = tiendas;
+            this.mensajeError = mensajeError;
+        }
+    }
+
+    private class CargarTiendasTask extends AsyncTask<Void, Void, ResultadoTiendas> {
+
+        private final ApiService apiService;
+
+        CargarTiendasTask(ApiService apiService) {
+            this.apiService = apiService;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            mostrarCargando();
+        }
+
+        @Override
+        protected ResultadoTiendas doInBackground(Void... parametros) {
+            try {
+                Response<List<Tienda>> respuesta = apiService.getTiendas().execute();
+                if (respuesta.isSuccessful() && respuesta.body() != null) {
+                    return new ResultadoTiendas(respuesta.body(), null);
+                }
+                String mensaje = RetrofitClient.leerMensajeError(respuesta, "No se pudieron cargar las tiendas.");
+                return new ResultadoTiendas(null, mensaje);
+            } catch (IOException e) {
+                return new ResultadoTiendas(null, "No se pudo conectar con el servidor.");
+            } catch (Exception e) {
+                return new ResultadoTiendas(null, "No se pudieron cargar las tiendas.");
+            }
+        }
+
+        @Override
+        protected void onPostExecute(ResultadoTiendas resultado) {
+            tareaCarga = null;
+            if (!isAdded()) {
+                return;
+            }
+            if (resultado.mensajeError != null) {
+                mostrarError(resultado.mensajeError);
+            } else {
+                pintarTiendas(resultado.tiendas);
+            }
+        }
+    }
+
     private void pintarTiendas(List<Tienda> tiendas) {
         listaTiendas.removeAllViews();
 
@@ -113,11 +149,10 @@ public abstract class TiendasBaseFragment extends Fragment {
         }
 
         mostrarLista();
-        listaTiendas.scheduleLayoutAnimation(); // las tarjetas aparecen subiendo (anim/lista_aparecer.xml)
+        listaTiendas.scheduleLayoutAnimation();
         alTerminarDePintar(tiendas);
     }
 
-    // Crea la tarjeta de una tienda con los datos comunes y le pide a la pantalla hija su contenido
     private View crearTarjeta(LayoutInflater inflater, Tienda tienda) {
         View tarjeta = inflater.inflate(R.layout.item_tienda, listaTiendas, false);
 
@@ -140,14 +175,12 @@ public abstract class TiendasBaseFragment extends Fragment {
         return tarjeta;
     }
 
-    // Muestra solo la rueda de carga
     private void mostrarCargando() {
         barraCargando.setVisibility(View.VISIBLE);
         bloqueError.setVisibility(View.GONE);
         scrollTiendas.setVisibility(View.GONE);
     }
 
-    // Muestra solo el mensaje de error con el boton Reintentar
     private void mostrarError(String mensaje) {
         textoError.setText(mensaje);
         barraCargando.setVisibility(View.GONE);
@@ -155,7 +188,6 @@ public abstract class TiendasBaseFragment extends Fragment {
         scrollTiendas.setVisibility(View.GONE);
     }
 
-    // Muestra solo la lista de tiendas
     private void mostrarLista() {
         barraCargando.setVisibility(View.GONE);
         bloqueError.setVisibility(View.GONE);

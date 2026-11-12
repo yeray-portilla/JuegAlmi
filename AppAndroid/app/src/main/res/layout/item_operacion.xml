@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Tarjeta de una operacion en "Mis operaciones": una compra, un alquiler o una solicitud de reparacion.
-     OperacionAdapter rellena cada parte y oculta lo que no hace falta. -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -19,7 +17,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Foto de la solicitud (url_foto). Solo se ve si la tiene. -->
         <ImageView
             android:id="@+id/iv_foto_operacion"
             android:layout_width="match_parent"
@@ -30,7 +27,6 @@
             android:scaleType="centerCrop"
             android:visibility="gone"/>
 
-        <!-- "Compra #12", "Alquiler #3" o el aparato de la solicitud -->
         <TextView
             android:id="@+id/tv_titulo_operacion"
             android:layout_width="match_parent"
@@ -40,7 +36,6 @@
             android:textStyle="bold"
             tools:text="Alquiler #3"/>
 
-        <!-- Lo que incluye (compras y alquileres) o la descripcion del problema (solicitudes) -->
         <TextView
             android:id="@+id/tv_detalle_operacion"
             android:layout_width="match_parent"
@@ -50,7 +45,6 @@
             android:textSize="14sp"
             tools:text="The Legend of Zelda, Mario Kart x2"/>
 
-        <!-- Fecha y estado en la misma linea: "Desde el 2026-11-10 · " + "activo" (el estado va en color) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,7 +69,6 @@
                 tools:text="Activo"/>
         </LinearLayout>
 
-        <!-- Motivo del rechazo (solo solicitudes rechazadas) -->
         <TextView
             android:id="@+id/tv_motivo_operacion"
             android:layout_width="match_parent"
@@ -96,7 +89,6 @@
             android:textStyle="bold"
             tools:text="15 €"/>
 
-        <!-- Cancelar (solicitud o alquiler pendiente) o Devolver (alquiler activo) -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_accion_operacion"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"

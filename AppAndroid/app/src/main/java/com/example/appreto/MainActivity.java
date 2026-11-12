@@ -86,10 +86,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Abre la pantalla de la opcion elegida en el menu lateral
     private void abrirOpcionMenuLateral(int idOpcion) {
         if (idOpcion == R.id.nav_services) {
-            // Servicios = el catalogo (primera pestana de la barra de abajo)
             bottomNav.setSelectedItemId(R.id.nav_devices);
         } else if (idOpcion == R.id.nav_location) {
             toolbar.setTitle(R.string.nav_location);
@@ -104,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
             toolbar.setTitle(R.string.nav_operations);
             loadFragment(new MisOperacionesFragment());
         } else if (idOpcion == R.id.nav_admin) {
-            // Doble seguridad: la opcion solo se ve si es admin, y la API devuelve 403 si no lo es
             if (SharedPrefManager.getInstance(this).esAdmin()) {
                 toolbar.setTitle(R.string.nav_admin);
                 loadFragment(new AdminFragment());
@@ -115,13 +112,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Abre Mis operaciones directamente en la pestana "Mis solicitudes" (lo usa Soporte al enviar una solicitud)
     public void abrirMisSolicitudes() {
         toolbar.setTitle(R.string.nav_operations);
         loadFragment(MisOperacionesFragment.nuevaInstancia(MisOperacionesFragment.PESTANA_SOLICITUDES));
     }
 
-    // Respuesta del usuario al permiso de ubicacion: LocationHelper continua con la accion que estaba esperando
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -136,12 +131,10 @@ public class MainActivity extends AppCompatActivity {
         loadFragment(new LoginFragment());
     }
 
-    // Lo usa RegistroFragment para volver al login
     public void mostrarLogin() {
         showLogin();
     }
 
-    // Pantalla de registro: igual que el login, sin barras ni menu lateral
     public void mostrarRegistro() {
         appBarLayout.setVisibility(View.GONE);
         bottomNav.setVisibility(View.GONE);
@@ -155,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setVisibility(View.VISIBLE);
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 
-        // Actualizar header del navigation view con los datos del usuario logueado
         NavigationView navigationView = findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
         TextView navUsername = headerView.findViewById(R.id.nav_header_name);
@@ -172,7 +164,6 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setSelectedItemId(R.id.nav_devices);
     }
 
-    // La opcion "Administracion" del menu lateral solo se ve si el usuario tiene ROLE_ADMIN
     private void mostrarOpcionAdminSiEsAdmin(NavigationView navigationView) {
         boolean esAdmin = SharedPrefManager.getInstance(this).esAdmin();
         navigationView.getMenu().findItem(R.id.nav_admin).setVisible(esAdmin);

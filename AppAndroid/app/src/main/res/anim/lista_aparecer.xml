@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Animacion para listas: cada tarjeta usa "aparecer" y empieza un poco despues que la anterior (delay 10 %).
-     Se pone en las listas con android:layoutAnimation="@anim/lista_aparecer". -->
 <layoutAnimation xmlns:android="http://schemas.android.com/apk/res/android"
     android:animation="@anim/aparecer"
     android:delay="10%"

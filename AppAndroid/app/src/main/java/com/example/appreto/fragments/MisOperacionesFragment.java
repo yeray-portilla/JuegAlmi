@@ -32,31 +32,20 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Mis operaciones (menu lateral), con tres pestanas como en Ionic:
- *  - Compras
- *  - Alquileres: Cancelar si esta pendiente, Devolver si esta activo
- *  - Mis solicitudes (las reparaciones pedidas en Soporte): Cancelar si esta pendiente
- * Todo viene de una sola llamada (GET operaciones/mis-operaciones) y cada pestana filtra por "tipo".
- */
 public class MisOperacionesFragment extends Fragment implements OperacionAdapter.AccionesOperacion {
 
-    // Numero de cada pestana, en el mismo orden que en fragment_mis_operaciones.xml
     public static final int PESTANA_COMPRAS = 0;
     public static final int PESTANA_ALQUILERES = 1;
     public static final int PESTANA_SOLICITUDES = 2;
 
-    // "tipo" de la API que muestra cada pestana
     private static final String[] TIPOS = {"compra", "alquiler", "reparacion"};
 
-    // Texto que se ve en cada pestana cuando no hay nada
     private static final String[] TEXTOS_VACIO = {
             "Todavía no has comprado nada.",
             "Todavía no has alquilado nada.",
             "No has pedido ninguna reparación."
     };
 
-    // Clave para decir con que pestana se abre la pantalla (ver nuevaInstancia)
     private static final String ARG_PESTANA = "pestana_inicial";
 
     private ApiService api;
@@ -67,15 +56,12 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
     private TextView textoVacio;
     private RecyclerView listaOperaciones;
 
-    // Todas las operaciones que ha mandado la API, y las de la pestana elegida (las que se ven)
     private final List<Operacion> todasLasOperaciones = new ArrayList<>();
     private final List<Operacion> operacionesVisibles = new ArrayList<>();
     private OperacionAdapter adaptador;
 
-    // true mientras se espera la respuesta de cancelar/devolver (para no mandarlo dos veces)
     private boolean enviando = false;
 
-    // Crea la pantalla abierta en una pestana concreta (Soporte la usa para ir a "Mis solicitudes")
     public static MisOperacionesFragment nuevaInstancia(int pestanaInicial) {
         MisOperacionesFragment fragment = new MisOperacionesFragment();
         Bundle argumentos = new Bundle();
@@ -84,7 +70,6 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
         return fragment;
     }
 
-    // Crea la vista, elige la pestana inicial y carga las operaciones
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -112,7 +97,6 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
         return vista;
     }
 
-    // Si nos han pedido una pestana concreta (ver nuevaInstancia), la seleccionamos
     private void elegirPestanaInicial() {
         if (getArguments() == null) {
             return;
@@ -124,7 +108,6 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
         }
     }
 
-    // Al cambiar de pestana no hace falta volver a llamar a la API: solo filtramos lo que ya tenemos
     private void escucharCambioDePestana() {
         pestanas.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -142,7 +125,6 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
         });
     }
 
-    // Numero de la pestana elegida (0, 1 o 2)
     private int obtenerPestanaElegida() {
         int posicion = pestanas.getSelectedTabPosition();
         if (posicion < 0) {
@@ -151,11 +133,6 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
         return posicion;
     }
 
-    // =====================================================================
-    // CARGAR Y MOSTRAR
-    // =====================================================================
-
-    // GET operaciones/mis-operaciones (compras, alquileres y reparaciones juntas)
     private void cargarOperaciones() {
         mostrarCargando();
 
@@ -163,7 +140,7 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
             @Override
             public void onResponse(Call<List<Operacion>> call, Response<List<Operacion>> response) {
                 if (!isAdded()) {
-                    return; // el usuario ya se fue de esta pantalla
+                    return;
                 }
                 if (response.isSuccessful() && response.body() != null) {
                     todasLasOperaciones.clear();
@@ -185,7 +162,6 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
         });
     }
 
-    // Deja en la lista solo las operaciones del tipo de la pestana elegida
     private void mostrarPestanaElegida() {
         int pestana = obtenerPestanaElegida();
         String tipo = TIPOS[pestana];
@@ -207,11 +183,10 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
         } else {
             textoVacio.setVisibility(View.GONE);
             listaOperaciones.setVisibility(View.VISIBLE);
-            listaOperaciones.scheduleLayoutAnimation(); // las tarjetas aparecen subiendo (anim/lista_aparecer.xml)
+            listaOperaciones.scheduleLayoutAnimation();
         }
     }
 
-    // Muestra solo la rueda de carga
     private void mostrarCargando() {
         barraCargando.setVisibility(View.VISIBLE);
         bloqueError.setVisibility(View.GONE);
@@ -219,7 +194,6 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
         listaOperaciones.setVisibility(View.GONE);
     }
 
-    // Muestra solo el mensaje de error con el boton Reintentar
     private void mostrarError(String mensaje) {
         textoError.setText(mensaje);
         barraCargando.setVisibility(View.GONE);
@@ -228,11 +202,6 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
         listaOperaciones.setVisibility(View.GONE);
     }
 
-    // =====================================================================
-    // ACCIONES (las llama OperacionAdapter al pulsar el boton de una tarjeta)
-    // =====================================================================
-
-    // Pregunta si de verdad quiere cancelar la solicitud y, si dice que si, la cancela
     @Override
     public void cancelarSolicitud(Operacion solicitud) {
         new AlertDialog.Builder(requireContext())
@@ -248,7 +217,6 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
                 .show();
     }
 
-    // DELETE soporte/solicitudes/{id}. En las reparaciones, "id" es el id de la solicitud.
     private void enviarCancelarSolicitud(Operacion solicitud) {
         if (enviando) {
             return;
@@ -268,7 +236,6 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
         });
     }
 
-    // PUT operaciones/alquileres/{id}/devolver. Si esta pendiente, la API lo cancela; si esta activo, lo devuelve.
     @Override
     public void devolverAlquiler(Operacion alquiler) {
         if (enviando) {
@@ -296,7 +263,6 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
         });
     }
 
-    // Al acabar cancelar/devolver: aviso (el de exito o el error de la API) y recargar la lista
     private void terminarAccion(boolean bienHecho, String mensajeOk, Response<?> respuesta) {
         enviando = false;
         if (!isAdded()) {
@@ -310,7 +276,6 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
         cargarOperaciones();
     }
 
-    // Al acabar cancelar/devolver sin conexion con el servidor
     private void terminarAccionSinConexion() {
         enviando = false;
         if (!isAdded()) {
@@ -319,7 +284,6 @@ public class MisOperacionesFragment extends Fragment implements OperacionAdapter
         mostrarAviso("No se pudo conectar con el servidor.");
     }
 
-    // Mensaje corto abajo de la pantalla
     private void mostrarAviso(String mensaje) {
         Toast.makeText(requireContext(), mensaje, Toast.LENGTH_LONG).show();
     }

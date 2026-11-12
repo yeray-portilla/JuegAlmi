@@ -2,7 +2,6 @@ package com.example.appreto.models;
 
 import com.google.gson.annotations.SerializedName;
 
-// Una solicitud de reparacion tal como la devuelve GET admin/solicitudes (solo administrador)
 public class SolicitudAdmin {
     @SerializedName("id")
     private int id;
@@ -10,19 +9,15 @@ public class SolicitudAdmin {
     @SerializedName("fecha")
     private String fecha;
 
-    // pendiente, aceptada o rechazada
     @SerializedName("estado")
     private String estado;
 
-    // Nombre del cliente que pidio la reparacion
     @SerializedName("usuario")
     private String usuario;
 
-    // Aparato, ej. "Sony PlayStation 5"
     @SerializedName("dispositivo")
     private String dispositivo;
 
-    // Departamento del aparato: Consolas, Moviles o Tablets
     @SerializedName("tipo")
     private String tipo;
 
@@ -35,7 +30,6 @@ public class SolicitudAdmin {
     @SerializedName("url_foto")
     private String urlFoto;
 
-    // 0 y 0 = el cliente no compartio su ubicacion
     @SerializedName("latitud")
     private double latitud;
 
@@ -45,12 +39,9 @@ public class SolicitudAdmin {
     @SerializedName("motivo_rechazo")
     private String motivoRechazo;
 
-    // Datos de la reparacion. Son null mientras la solicitud no se acepta.
-    // Se usan Integer y Double (no int y double) para poder guardar null.
     @SerializedName("reparacion_id")
     private Integer reparacionId;
 
-    // en_proceso o completada
     @SerializedName("reparacion_estado")
     private String reparacionEstado;
 
@@ -77,12 +68,10 @@ public class SolicitudAdmin {
     public Double getPrecioEstimado() { return precioEstimado; }
     public Double getPrecioFinal() { return precioFinal; }
 
-    // true si el cliente compartio su ubicacion (0, 0 = sin permiso de GPS)
     public boolean tieneUbicacion() {
         return latitud != 0 || longitud != 0;
     }
 
-    // true si la solicitud esta aceptada y su reparacion ya esta terminada
     public boolean estaCompletada() {
         return "completada".equals(reparacionEstado);
     }

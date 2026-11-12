@@ -16,19 +16,10 @@ import com.example.appreto.api.RetrofitClient;
 import com.example.appreto.models.Operacion;
 import java.util.List;
 
-/**
- * Tarjetas de "Mis operaciones". Sirve para las tres pestanas:
- *  - Compras:        "Compra #N", productos, fecha y total.
- *  - Alquileres:     "Alquiler #N", juegos, fecha, estado, total y boton Cancelar (pendiente) o Devolver (activo).
- *  - Mis solicitudes: aparato, descripcion, fecha, estado, motivo, foto, precio y boton Cancelar (pendiente).
- * Lo que hace cada boton lo decide MisOperacionesFragment (interfaz AccionesOperacion).
- */
 public class OperacionAdapter extends RecyclerView.Adapter<OperacionAdapter.OperacionViewHolder> {
 
-    // Lo que puede hacer el usuario desde una tarjeta
     public interface AccionesOperacion {
         void cancelarSolicitud(Operacion solicitud);
-        // Devuelve un alquiler activo o cancela uno pendiente (la API usa la misma ruta para los dos)
         void devolverAlquiler(Operacion alquiler);
     }
 
@@ -40,7 +31,6 @@ public class OperacionAdapter extends RecyclerView.Adapter<OperacionAdapter.Oper
         this.acciones = acciones;
     }
 
-    // Crea la tarjeta de una operacion (item_operacion.xml)
     @NonNull
     @Override
     public OperacionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -48,7 +38,6 @@ public class OperacionAdapter extends RecyclerView.Adapter<OperacionAdapter.Oper
         return new OperacionViewHolder(view);
     }
 
-    // Rellena la tarjeta segun el tipo de operacion
     @Override
     public void onBindViewHolder(@NonNull OperacionViewHolder holder, int position) {
         Operacion operacion = operaciones.get(position);
@@ -65,17 +54,14 @@ public class OperacionAdapter extends RecyclerView.Adapter<OperacionAdapter.Oper
         mostrarBotonAccion(holder.botonAccion, operacion);
     }
 
-    // true si la operacion es una solicitud de reparacion
     private boolean esSolicitud(Operacion operacion) {
         return "reparacion".equals(operacion.getTipo());
     }
 
-    // true si la operacion es un alquiler
     private boolean esAlquiler(Operacion operacion) {
         return "alquiler".equals(operacion.getTipo());
     }
 
-    // Compra o alquiler: "Compra #N" / "Alquiler #N", lo que incluye y la fecha
     private void rellenarCompraOAlquiler(OperacionViewHolder holder, Operacion operacion) {
         String titulo;
         String fecha;
@@ -92,7 +78,6 @@ public class OperacionAdapter extends RecyclerView.Adapter<OperacionAdapter.Oper
         holder.textoMotivo.setVisibility(View.GONE);
     }
 
-    // Solicitud: aparato, descripcion, fecha y, si se rechazo, el motivo
     private void rellenarSolicitud(OperacionViewHolder holder, Operacion solicitud) {
         holder.textoTitulo.setText(solicitud.getDispositivo());
         holder.textoDetalle.setText(solicitud.getDescripcion());
@@ -107,7 +92,6 @@ public class OperacionAdapter extends RecyclerView.Adapter<OperacionAdapter.Oper
         }
     }
 
-    // Lo que incluye la compra o el alquiler: "Juego A x2, Juego B"
     private String crearTextoDetalle(Operacion operacion) {
         StringBuilder texto = new StringBuilder();
         if (operacion.getDetalle() == null) {
@@ -125,7 +109,6 @@ public class OperacionAdapter extends RecyclerView.Adapter<OperacionAdapter.Oper
         return texto.toString();
     }
 
-    // Estado con su texto y su color (como .estado-op en Ionic)
     private void mostrarEstado(TextView texto, Operacion operacion) {
         String estado = operacion.getEstado();
         if (estado == null) {
@@ -135,7 +118,6 @@ public class OperacionAdapter extends RecyclerView.Adapter<OperacionAdapter.Oper
         texto.setTextColor(obtenerColorEstado(texto.getContext(), estado));
     }
 
-    // Texto del estado. En las solicitudes es una frase; en compras y alquileres, la palabra con mayuscula.
     private String obtenerTextoEstado(Operacion operacion, String estado) {
         if (esSolicitud(operacion)) {
             if (estado.equals("pendiente")) {
@@ -154,7 +136,6 @@ public class OperacionAdapter extends RecyclerView.Adapter<OperacionAdapter.Oper
         return ponerMayuscula(estado);
     }
 
-    // "activo" -> "Activo"
     private String ponerMayuscula(String texto) {
         if (texto.isEmpty()) {
             return texto;
@@ -162,7 +143,6 @@ public class OperacionAdapter extends RecyclerView.Adapter<OperacionAdapter.Oper
         return texto.substring(0, 1).toUpperCase() + texto.substring(1);
     }
 
-    // Verde = terminado bien, ambar = en marcha, rojo = rechazado, gris = finalizado u otro
     private int obtenerColorEstado(Context contexto, String estado) {
         int color;
         if (estado.equals("activo") || estado.equals("completada")) {
@@ -177,7 +157,6 @@ public class OperacionAdapter extends RecyclerView.Adapter<OperacionAdapter.Oper
         return contexto.getResources().getColor(color, null);
     }
 
-    // Total en ambar. Las solicitudes pendientes o rechazadas aun no tienen precio (total = null).
     private void mostrarTotal(TextView texto, Operacion operacion) {
         if (operacion.getTotal() == null) {
             texto.setVisibility(View.GONE);
@@ -187,11 +166,10 @@ public class OperacionAdapter extends RecyclerView.Adapter<OperacionAdapter.Oper
         texto.setVisibility(View.VISIBLE);
     }
 
-    // Foto de la operacion (url_foto) con Glide. Si no tiene foto, se oculta la imagen.
     private void cargarFoto(ImageView imagen, Operacion operacion) {
         String urlFoto = RetrofitClient.construirUrlFoto(operacion.getUrlFoto());
         if (urlFoto == null) {
-            Glide.with(imagen).clear(imagen); // por si esta tarjeta se reutiliza y tenia la foto de otra
+            Glide.with(imagen).clear(imagen);
             imagen.setVisibility(View.GONE);
             return;
         }
@@ -203,11 +181,6 @@ public class OperacionAdapter extends RecyclerView.Adapter<OperacionAdapter.Oper
                 .into(imagen);
     }
 
-    // Boton de la tarjeta:
-    //  - solicitud pendiente -> "Cancelar" (DELETE soporte/solicitudes/{id})
-    //  - alquiler pendiente  -> "Cancelar" (PUT operaciones/alquileres/{id}/devolver)
-    //  - alquiler activo     -> "Devolver" (la misma ruta)
-    //  - el resto            -> sin boton
     private void mostrarBotonAccion(Button boton, Operacion operacion) {
         boolean pendiente = "pendiente".equals(operacion.getEstado());
         boolean activo = "activo".equals(operacion.getEstado());

@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">JuegAlmi</string>
 
-    <!-- Login -->
     <string name="login_title">Hola de nuevo</string>
     <string name="login_subtitle">Entra para ver el catálogo de JuegAlmi.</string>
     <string name="login_hint">Correo o usuario</string>
@@ -11,7 +10,6 @@
     <string name="login_ir_registro">¿No tienes cuenta? Crear cuenta</string>
     <string name="login_entrando">Entrando...</string>
 
-    <!-- Registro -->
     <string name="registro_title">Crea tu cuenta</string>
     <string name="registro_subtitle">Regístrate para comprar, alquilar y pedir reparaciones en JuegAlmi.</string>
     <string name="registro_nombre_hint">Nombre de usuario</string>
@@ -21,14 +19,12 @@
     <string name="registro_creando">Creando cuenta...</string>
     <string name="registro_ir_login">¿Ya tienes cuenta? Inicia sesión</string>
 
-    <!-- Tiendas (Historia, Ubicacion, Galeria) -->
     <string name="tiendas_recargar">Recargar</string>
     <string name="tiendas_reintentar">Reintentar</string>
     <string name="tiendas_como_llegar">Cómo llegar</string>
     <string name="atribucion_mapa">Tiles © Esri</string>
     <string name="obteniendo_ubicacion">Obteniendo ubicación…</string>
 
-    <!-- Navigation Drawer -->
     <string name="nav_header_name">Nombre de usuario</string>
     <string name="nav_header_email">correo@ejemplo.com</string>
     <string name="nav_services">Servicios</string>
@@ -39,13 +35,11 @@
     <string name="nav_admin">Administración</string>
     <string name="nav_logout">Cerrar sesión</string>
 
-    <!-- Bottom Nav -->
     <string name="bottom_nav_devices">Dispositivos</string>
     <string name="bottom_nav_videogames">Videojuegos</string>
     <string name="bottom_nav_consoles">Consolas</string>
     <string name="bottom_nav_support">Soporte</string>
 
-    <!-- Support -->
     <string name="support_title">Soporte</string>
     <string name="tab_consoles">CONSOLAS</string>
     <string name="tab_telephony">TELEFONÍA</string>
@@ -56,7 +50,6 @@
     <string name="repair_price">60 €</string>
     <string name="btn_send_request">Enviar solicitud</string>
 
-    <!-- Mobiles -->
     <string name="mobiles_title">Móviles</string>
     <string name="tab_all">Todos</string>
     <string name="tab_smartphones">Smartphones</string>

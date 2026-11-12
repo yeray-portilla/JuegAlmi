@@ -7,14 +7,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.bumptech.glide.Glide;
 import com.example.appreto.R;
+import com.example.appreto.api.ImagenHelper;
 import com.example.appreto.api.PrecioHelper;
 import com.example.appreto.api.RetrofitClient;
 import com.example.appreto.models.Product;
 import java.util.List;
 
-// Lista de productos del catalogo (Dispositivos, Videojuegos y Consolas)
 public class MobileAdapter extends RecyclerView.Adapter<MobileAdapter.MobileViewHolder> {
 
     private List<Product> mobiles;
@@ -30,7 +29,6 @@ public class MobileAdapter extends RecyclerView.Adapter<MobileAdapter.MobileView
         this.listener = listener;
     }
 
-    // Crea la tarjeta de un producto (item_mobile.xml)
     @NonNull
     @Override
     public MobileViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -38,7 +36,6 @@ public class MobileAdapter extends RecyclerView.Adapter<MobileAdapter.MobileView
         return new MobileViewHolder(view);
     }
 
-    // Rellena la tarjeta con los datos del producto
     @Override
     public void onBindViewHolder(@NonNull MobileViewHolder holder, int position) {
         Product producto = mobiles.get(position);
@@ -52,18 +49,11 @@ public class MobileAdapter extends RecyclerView.Adapter<MobileAdapter.MobileView
         holder.btnRent.setOnClickListener(v -> pulsarAlquilar(producto));
     }
 
-    // Descarga la foto del producto (foto_url) con Glide. Si no tiene o falla, se ve el icono de respaldo.
     private void cargarFoto(ImageView imagen, Product producto) {
-        Glide.with(imagen)
-                .load(RetrofitClient.construirUrlFoto(producto.getFotoUrl()))
-                .placeholder(R.drawable.ic_placeholder)
-                .error(R.drawable.ic_placeholder)
-                .into(imagen);
+        String urlFoto = RetrofitClient.construirUrlFoto(producto.getFotoUrl());
+        ImagenHelper.cargar(imagen, urlFoto, R.drawable.ic_placeholder);
     }
 
-    // Solo los videojuegos se alquilan: llevan el precio de alquiler y el boton "Alquilar".
-    // Las consolas y los moviles/tablets solo se compran (igual que en la app Ionic).
-    // Sin stock no se puede comprar, y sin copias no se puede alquilar (el boton se ve apagado, como en Ionic).
     private void mostrarPrecioYBotones(MobileViewHolder holder, Product producto) {
         String precio = PrecioHelper.formatearPrecio(producto.getPrice());
         holder.btnBuy.setVisibility(View.VISIBLE);
@@ -80,7 +70,6 @@ public class MobileAdapter extends RecyclerView.Adapter<MobileAdapter.MobileView
         }
     }
 
-    // Activa o desactiva un boton. Desactivado se ve al 60 % para que el texto se siga leyendo (como en Ionic).
     private void activarBoton(View boton, boolean activo) {
         boton.setEnabled(activo);
         if (activo) {
@@ -90,8 +79,6 @@ public class MobileAdapter extends RecyclerView.Adapter<MobileAdapter.MobileView
         }
     }
 
-    // Linea gris debajo del nombre, como en Ionic:
-    //  moviles/tablets "Samsung · Smartphone · 128 GB", consolas "Sony · 825 GB", videojuegos "Nintendo"
     private String crearSubtitulo(Product producto) {
         StringBuilder subtitulo = new StringBuilder();
         anadirParte(subtitulo, producto.getMarca());
@@ -107,7 +94,6 @@ public class MobileAdapter extends RecyclerView.Adapter<MobileAdapter.MobileView
         return subtitulo.toString();
     }
 
-    // Anade un trozo al subtitulo separado por " · " (si el trozo esta vacio, no hace nada)
     private void anadirParte(StringBuilder texto, String parte) {
         if (parte == null || parte.isEmpty()) {
             return;
@@ -118,19 +104,16 @@ public class MobileAdapter extends RecyclerView.Adapter<MobileAdapter.MobileView
         texto.append(parte);
     }
 
-    // true si el producto se puede alquilar (solo los videojuegos). Lo usa tambien MobilesFragment.
     public static boolean esAlquilable(Product producto) {
         return "Videojuegos".equals(producto.getCategory());
     }
 
-    // Avisa al Fragment de que se ha pulsado "Comprar"
     private void pulsarComprar(Product producto) {
         if (listener != null) {
             listener.onBuyClick(producto);
         }
     }
 
-    // Avisa al Fragment de que se ha pulsado "Alquilar"
     private void pulsarAlquilar(Product producto) {
         if (listener != null) {
             listener.onRentClick(producto);

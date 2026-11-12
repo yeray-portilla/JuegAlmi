@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:layout_marginBottom="56dp"/> <!-- To not overlap with bottom nav -->
+            android:layout_marginBottom="56dp"/>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation"
@@ -43,7 +43,10 @@
             app:menu="@menu/bottom_nav_menu"
             style="?attr/bottomNavigationStyle"
             app:itemIconTint="@color/nav_item_color_state"
-            app:itemTextColor="@color/nav_item_color_state"/>
+            app:itemTextColor="@color/nav_item_color_state"
+            app:labelVisibilityMode="labeled"
+            app:itemTextAppearanceActive="@style/TextoBarraInferior"
+            app:itemTextAppearanceInactive="@style/TextoBarraInferior"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

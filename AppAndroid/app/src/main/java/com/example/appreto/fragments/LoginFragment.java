@@ -24,14 +24,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-// Pantalla de login
 public class LoginFragment extends Fragment {
 
     private TextInputEditText etLogin;
     private TextInputEditText etPassword;
     private MaterialButton botonEntrar;
 
-    // Crea la vista y conecta los botones "Entrar" y "Crear cuenta"
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -47,7 +45,6 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
-    // Comprueba que los campos no estan vacios y hace el login
     private void pulsarEntrar() {
         String login = leerTexto(etLogin).trim();
         String password = leerTexto(etPassword).trim();
@@ -59,7 +56,6 @@ public class LoginFragment extends Fragment {
         iniciarSesion(login, password);
     }
 
-    // POST auth/login. Si va bien guarda la sesion y entra en la app; si no, muestra el error de la API.
     private void iniciarSesion(String login, String password) {
         JsonObject body = new JsonObject();
         body.addProperty("login", login);
@@ -71,7 +67,7 @@ public class LoginFragment extends Fragment {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 if (!isAdded()) {
-                    return; // el usuario ya se fue de esta pantalla
+                    return;
                 }
                 ponerCargando(false);
                 boolean sesionGuardada = response.isSuccessful() && guardarSesion(requireContext(), response.body());
@@ -94,7 +90,6 @@ public class LoginFragment extends Fragment {
         });
     }
 
-    // Mientras se espera a la API: boton desactivado y con el texto "Entrando..."
     private void ponerCargando(boolean cargando) {
         botonEntrar.setEnabled(!cargando);
         if (cargando) {
@@ -104,21 +99,18 @@ public class LoginFragment extends Fragment {
         }
     }
 
-    // Avisa a MainActivity de que el login ha ido bien (muestra el catalogo)
     private void entrarEnLaApp() {
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).onLoginSuccess();
         }
     }
 
-    // Abre la pantalla de registro
     private void irARegistro() {
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).mostrarRegistro();
         }
     }
 
-    // Lee el texto de un campo (nunca devuelve null)
     private String leerTexto(TextInputEditText campo) {
         if (campo.getText() == null) {
             return "";
@@ -126,8 +118,6 @@ public class LoginFragment extends Fragment {
         return campo.getText().toString();
     }
 
-    // Guarda token, usuario, email y roles de la respuesta del login. Devuelve false si la respuesta no trae token.
-    // Es static porque tambien la usa RegistroFragment (despues de crear la cuenta hace login).
     public static boolean guardarSesion(Context context, LoginResponse datos) {
         if (datos == null || datos.getToken() == null || datos.getUser() == null) {
             return false;

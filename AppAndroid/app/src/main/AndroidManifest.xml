@@ -27,7 +27,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Permite que la app de la camara guarde la foto a tamano completo en un archivo nuestro (Soporte) -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
